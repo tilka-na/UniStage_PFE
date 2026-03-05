@@ -1,0 +1,16 @@
+# logs
+*.log
+
+# build
+target/
+dist/
+
+# node
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# JDK
+openJdk-25/

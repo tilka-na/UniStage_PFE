@@ -1,0 +1,220 @@
+<div class="min-h-screen bg-lightBg dark:bg-darkBg text-textLightMode dark:text-textDarkMode p-4 md:p-8 transition-colors duration-300"> 
+  <div class="max-w-7xl mx-auto">
+    
+    <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+      <div>
+        <h2 class="text-gold text-xs font-bold uppercase mb-2 tracking-wider">Espace Recruteur</h2>
+        <h1 class="text-3xl font-bold">
+          @if (!selectedDomain) { Tableau de Bord }
+          @else { Dossier : {{ selectedDomain }} }
+        </h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        @if (selectedDomain) {
+          <button (click)="retourAuxDomaines()" class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            ← Retour
+          </button>
+        }
+        <button (click)="openOfferModal()" 
+                class="bg-gold text-white dark:text-darkBg px-6 py-3 rounded-lg font-bold hover:opacity-90 transition shadow-lg flex items-center gap-2">
+          <span class="text-xl leading-none">+</span> <span class="hidden md:inline">Créer une Offre</span>
+        </button>
+      </div>
+    </div>
+
+    @if (!selectedDomain) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn">
+        @for (domaine of domaines; track domaine) {
+          <div (click)="ouvrirDomaine(domaine)" 
+               class="bg-lightCard dark:bg-darkCard border border-gray-200 dark:border-gray-700 rounded-xl p-6 cursor-pointer hover:border-gold dark:hover:border-gold hover:-translate-y-1 transition-all duration-300 shadow-lg group text-center md:text-left">
+            <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">📁</div>
+            <h3 class="text-xl font-bold text-textLightMode dark:text-white mb-2">{{ domaine }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Cliquez pour voir les offres</p>
+          </div>
+        }
+        @empty {
+          <div class="col-span-full text-center p-10 bg-lightCard dark:bg-darkCard rounded-xl border border-gray-200 dark:border-gray-700">
+            <p class="text-gray-500 dark:text-gray-400">Aucune offre publiée. Créez votre première offre !</p>
+          </div>
+        }
+      </div>
+    }
+
+    @if (selectedDomain) {
+      <div class="animate-fadeIn space-y-10">
+        
+        <section>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                📂 Offres : {{ selectedDomain }}
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 bg-lightCard dark:bg-darkCard px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700">{{ filteredOffers.length }}</span>
+            </h2>
+            
+            <div class="bg-lightCard dark:bg-darkCard rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl transition-colors duration-300">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="bg-blue-50 dark:bg-[#1a2c4e] text-blue-800 dark:text-gray-300 text-sm uppercase">
+                            <tr>
+                                <th class="px-6 py-4">Titre</th>
+                                <th class="px-6 py-4 text-center">État de l'offre</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @for (offer of filteredOffers; track offer.id) {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-[#152642] transition-colors">
+                                <td class="px-6 py-4 font-medium text-textLightMode dark:text-white truncate max-w-[300px]">{{ offer.title }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="px-3 py-1.5 rounded-full text-xs font-bold border inline-block min-w-[100px]" 
+                                          [ngClass]="offer.status === 'OPEN' 
+                                            ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20' 
+                                            : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'">
+                                        {{ offer.status === 'OPEN' ? 'Ouverte' : 'Fermée' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button (click)="editOffer(offer.id)" class="bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white dark:bg-blue-600/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white px-3 py-2 rounded-lg text-sm transition">Modifier</button>
+                                        <button (click)="deleteOffer(offer.id)" class="bg-red-100 text-red-700 hover:bg-red-600 hover:text-white dark:bg-red-600/20 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white px-3 py-2 rounded-lg text-sm transition">Supprimer</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                🎓 Candidatures ({{ selectedDomain }})
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 bg-lightCard dark:bg-darkCard px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700">{{ filteredCandidatures.length }}</span>
+            </h2>
+
+            <div class="bg-lightCard dark:bg-darkCard rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl transition-colors duration-300">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="bg-blue-50 dark:bg-[#1a2c4e] text-blue-800 dark:text-gray-300 text-sm uppercase">
+                            <tr>
+                                <th class="px-6 py-4">Candidat (Cliquez pour le CV)</th>
+                                <th class="px-6 py-4 text-center">Statut</th>
+                                <th class="px-6 py-4 text-right">Décision</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @for (candidat of filteredCandidatures; track candidat.id) {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-[#152642] transition-colors">
+                                <td class="px-6 py-4">
+                                    <button (click)="voirCV(candidat.studentId)" 
+                                            class="text-textLightMode dark:text-white font-medium hover:text-gold dark:hover:text-gold transition flex items-center gap-2 group">
+                                          Étudiant #{{ candidat.studentId }}
+                                        <span class="text-[10px] bg-lightBg dark:bg-[#051125] text-gray-600 dark:text-gray-400 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition border border-gray-300 dark:border-gray-600">📄 Voir CV</span>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="px-3 py-1.5 rounded-full text-xs font-bold border inline-block min-w-[100px]" 
+                                          [ngClass]="{
+                                              'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20': candidat.status === 'PENDING',
+                                              'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20': candidat.status === 'ACCEPTED',
+                                              'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20': candidat.status === 'REJECTED'
+                                          }">
+                                        {{ candidat.status === 'PENDING' ? 'En attente' : (candidat.status === 'ACCEPTED' ? 'Acceptée' : 'Refusée') }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        @if (candidat.status === 'PENDING') {
+                                            <button (click)="changerStatut(candidat, 'ACCEPTED')" class="px-3 py-1.5 bg-green-100 text-green-700 border border-green-200 hover:bg-green-500 hover:text-white dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20 dark:hover:bg-green-500 dark:hover:text-white transition text-sm flex items-center gap-1 rounded-lg">✅ Accepter</button>
+                                            <button (click)="changerStatut(candidat, 'REJECTED')" class="px-3 py-1.5 bg-red-100 text-red-700 border border-red-200 hover:bg-red-500 hover:text-white dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20 dark:hover:bg-red-500 dark:hover:text-white transition text-sm flex items-center gap-1 rounded-lg">❌ Refuser</button>
+                                        } @else {
+                                            <span class="text-sm text-gray-500 italic">Décision prise</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+      </div>
+    }
+  </div>
+</div>
+
+@if (showOfferModal) {
+  <div class="fixed inset-0 bg-black/40 dark:bg-[#051125]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn overflow-y-auto">
+    <div class="bg-lightCard dark:bg-darkCard border border-gray-200 dark:border-gray-700 rounded-xl p-6 w-full max-w-3xl shadow-2xl my-auto transition-colors duration-300">
+      
+      <h2 class="text-2xl font-bold mb-6 text-gold flex items-center gap-2">
+        {{ isEditing ? 'Modifier l\'offre de Stage' : 'Nouvelle Offre de Stage' }}
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-h-[70vh] overflow-y-auto px-1">
+        <div class="col-span-1 md:col-span-2">
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Titre de l'offre *</label>
+          <input [(ngModel)]="newOffer.title" placeholder="Ex: Ingénieur Logiciel" class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Domaine (Dossier) *</label>
+          <input [(ngModel)]="newOffer.domain" placeholder="Ex: IT, Finance..." class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Nom de l'entreprise *</label>
+          <input [(ngModel)]="newOffer.companyName" placeholder="Ex: Tech Solutions" class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Localisation *</label>
+          <input [(ngModel)]="newOffer.location" placeholder="Ex: Casablanca, Remote..." class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Durée (Mois) *</label>
+          <input type="number" min="1" [(ngModel)]="newOffer.duration" placeholder="Ex: 6" class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div class="col-span-1 md:col-span-2">
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Compétences requises *</label>
+          <input [(ngModel)]="newOffer.skills" placeholder="Ex: Java, Angular, SQL..." class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors">
+        </div>
+
+        <div class="col-span-1 md:col-span-2">
+          <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Description *</label>
+          <textarea [(ngModel)]="newOffer.description" rows="4" placeholder="Détails des missions..." class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors resize-none"></textarea>
+        </div>
+
+        @if (isEditing) {
+          <div class="col-span-1 md:col-span-2">
+            <label class="text-sm text-gray-700 dark:text-gray-400 font-medium mb-1 block">Statut de l'offre *</label>
+            <select [(ngModel)]="newOffer.status" class="w-full p-3 rounded-lg bg-lightBg dark:bg-darkBg border border-gray-300 dark:border-gray-600 text-textLightMode dark:text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors cursor-pointer">
+              <option value="OPEN">Ouverte (OPEN)</option>
+              <option value="CLOSED">Fermée (CLOSED)</option>
+            </select>
+          </div>
+        }
+      </div>
+        
+      <div class="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <button (click)="closeOfferModal()" class="flex-1 bg-transparent border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-lg font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          Annuler
+        </button>
+        
+        <button (click)="submitOffer()" [disabled]="isSubmitting" class="flex-1 bg-gold text-white dark:text-darkBg px-4 py-3 rounded-lg font-bold hover:opacity-90 transition shadow-lg disabled:opacity-50">
+          @if (isSubmitting) { 
+              <div class="flex items-center justify-center gap-2">
+                <div class="animate-spin h-5 w-5 border-2 border-white dark:border-darkBg border-t-transparent rounded-full"></div>
+                <span>Chargement...</span>
+              </div>
+          } 
+          @else { {{ isEditing ? 'Enregistrer les modifications' : 'Publier l\'offre' }} }
+        </button>
+      </div>
+    </div>
+  </div>
+}

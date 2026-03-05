@@ -1,0 +1,180 @@
+
+<div class="min-h-screen bg-gray-50 dark:bg-[#051125] text-gray-900 dark:text-white p-4 md:p-8 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-10">
+      <h2 class="text-[#F3A712] text-xs font-bold uppercase mb-2 tracking-wider">Opportunités</h2>
+      <h1 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900 dark:text-white">Offres de Stage & Garde</h1>
+
+      <div class="bg-white dark:bg-[#0F2038] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl transition-colors duration-300">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="relative">
+                <input type="text" [(ngModel)]="searchTitle" (input)="onFilterChange()" 
+                       placeholder="Titre (ex: Java)..." 
+                       class="w-full bg-gray-50 dark:bg-[#051125] border border-gray-300 dark:border-gray-700 rounded-lg p-3 text-sm focus:border-[#F3A712] dark:focus:border-[#F3A712] outline-none transition text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
+            </div>
+
+            <div class="relative">
+                <input type="text" [(ngModel)]="searchCity" (input)="onFilterChange()" 
+                       placeholder="Ville (ex: Casa)..." 
+                       class="w-full bg-gray-50 dark:bg-[#051125] border border-gray-300 dark:border-gray-700 rounded-lg p-3 text-sm focus:border-[#F3A712] dark:focus:border-[#F3A712] outline-none transition text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
+            </div>
+
+            <div class="relative">
+                <input type="text" [(ngModel)]="searchDomain" (input)="onFilterChange()" 
+                       placeholder="Domaine (ex: IT)..." 
+                       class="w-full bg-gray-50 dark:bg-[#051125] border border-gray-300 dark:border-gray-700 rounded-lg p-3 text-sm focus:border-[#F3A712] dark:focus:border-[#F3A712] outline-none transition text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
+            </div>
+
+            <div class="relative">
+                <input type="text" [(ngModel)]="searchCompany" (input)="onFilterChange()" 
+                       placeholder="Entreprise..." 
+                       class="w-full bg-gray-50 dark:bg-[#051125] border border-gray-300 dark:border-gray-700 rounded-lg p-3 text-sm focus:border-[#F3A712] dark:focus:border-[#F3A712] outline-none transition text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500">
+            </div>
+
+        </div>
+      </div>
+    </div>
+
+    @if (isLoading) {
+        <div class="text-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F3A712] mx-auto"></div>
+            <p class="text-gray-500 dark:text-gray-400 mt-4">Chargement des offres...</p>
+        </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      
+      @for (offre of filteredOffers; track offre.id) {
+        
+        <div class="bg-white dark:bg-[#0F2038] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:border-[#F3A712]/50 hover:shadow-[0_0_20px_rgba(243,167,18,0.1)] transition-all duration-300 group flex flex-col justify-between h-full shadow-sm">
+          
+          <div>
+              <div class="flex justify-between items-start mb-4">
+                <span [ngClass]="offre.status === 'OPEN' ? 'bg-[#F3A712]/10 dark:bg-[#1a2c4e] text-[#F3A712] border-[#F3A712]/20' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 border-gray-300 dark:border-gray-700'"
+                      class="px-3 py-1 rounded-full text-xs font-bold border shadow-sm transition-colors duration-300">
+                    {{ offre.status || 'OPEN' }}
+                </span>
+                <span class="text-gray-500 dark:text-gray-400 text-xs flex items-center gap-1 font-medium">
+                      {{ offre.location || 'Maroc' }}
+                </span>
+              </div>
+              
+              <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white group-hover:text-[#F3A712] transition-colors">
+                  {{ offre.title }}
+              </h3>
+              
+              <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 flex items-center gap-2 font-medium">
+                    {{ offre.companyName || ('Entreprise #' + offre.companyId) }}
+                  @if (offre.domain) {
+                    <span class="text-gray-400 dark:text-gray-600">•</span>
+                    <span class="text-gray-500">{{ offre.domain }}</span>
+                  }
+              </p>
+
+              @if (offre.skills) {
+                <div class="mb-4 flex flex-wrap gap-2">
+                   @for (skill of offre.skills.split(','); track $index) {
+                      <span class="bg-[#F3A712]/10 text-[#F3A712] border border-[#F3A712]/20 px-2 py-1 rounded text-xs font-semibold">
+                         {{ skill.trim() }}
+                      </span>
+                   }
+                </div>
+              }
+
+              <p class="text-gray-600 dark:text-gray-500 text-sm line-clamp-2 mb-6">
+                  {{ offre.description }}
+              </p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-800/50 gap-4">
+            
+            <div class="text-blue-600 dark:text-gray-400 text-xs font-bold flex items-center gap-2 bg-gray-50 dark:bg-[#051125] px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-800">
+               ⏱️ {{ offre.duration }} Mois
+            </div>
+
+            <div class="flex items-center gap-3 w-full sm:w-auto"> 
+              
+              <button [routerLink]="['/offres', offre.id || 0]" 
+                      class="flex-1 sm:flex-none text-center bg-transparent border border-[#F3A712] text-[#F3A712] px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#F3A712]/10 transition">
+                Détails
+              </button>
+
+              @if (offre.status === 'OPEN') {
+                <button (click)="openApplyModal(offre)" 
+                        class="flex-1 bg-[#F3A712] text-[#051125] px-4 py-2 rounded-lg text-sm font-bold hover:bg-yellow-400 dark:hover:bg-white transition shadow-lg">
+                   Postuler
+                </button>
+              } @else {
+                <button disabled 
+                        class="flex-1 bg-blue-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-bold cursor-not-allowed border border-gray-300 dark:border-gray-700">
+                   Clôturée
+                </button>
+              }
+
+            </div>
+          </div>
+
+        </div>
+      }
+
+    </div>
+
+    @if (!isLoading && filteredOffers.length === 0) {
+        <div class="text-center py-20 bg-white dark:bg-[#0F2038]/50 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed shadow-sm">
+            <div class="text-4xl mb-3"></div>
+            <p class="text-gray-600 dark:text-gray-400 text-lg mb-2 font-medium">Aucune offre trouvée</p>
+            <button (click)="searchTitle=''; searchCity=''; searchDomain=''; searchCompany=''; onFilterChange()" 
+                    class="mt-2 text-[#F3A712] text-sm hover:underline font-bold">
+                Réinitialiser les filtres
+            </button>
+        </div>
+    }
+
+  </div>
+</div>
+
+@if (showModal) {
+  <div class="fixed inset-0 bg-black/40 dark:bg-black/70 flex justify-center items-center z-50 backdrop-blur-sm p-4 transition-all">
+    <div class="bg-white dark:bg-[#0F2038] border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-6 w-full max-w-md relative animate-fadeIn transition-colors duration-300">
+      
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-3xl leading-none transition">
+        &times;
+      </button>
+
+      <div class="mb-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          Postuler chez <span class="text-[#F3A712]">{{ selectedOffer?.companyName }}</span>
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Poste : {{ selectedOffer?.title }}</p>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Pourquoi vous ? (Motivation) </label>
+        <textarea [(ngModel)]="motivationText" 
+                  rows="5" 
+                  class="w-full bg-blue-50 dark:bg-[#051125] border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white focus:border-[#F3A712] focus:ring-1 focus:ring-[#F3A712] outline-none resize-none placeholder-gray-400 dark:placeholder-gray-600 transition-colors"
+                  placeholder="Bonjour, je suis très intéressé par ce stage car..."></textarea>
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="closeModal()" 
+                class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 font-bold transition">
+          Annuler
+        </button>
+
+        <button (click)="submitApplication()" 
+                [disabled]="isSubmitting"
+                class="flex-1 px-4 py-3 bg-[#F3A712] text-[#051125] rounded-lg font-bold hover:bg-yellow-400 dark:hover:bg-white transition flex justify-center items-center gap-2 disabled:opacity-50 shadow-md">
+          
+          @if (!isSubmitting) {
+            <span>Envoyer </span>
+          } @else {
+             <div class="animate-spin h-5 w-5 border-2 border-[#051125] border-t-transparent rounded-full"></div>
+             <span>Envoi...</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
