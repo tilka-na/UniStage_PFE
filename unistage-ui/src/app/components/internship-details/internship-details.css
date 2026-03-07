@@ -1,0 +1,13 @@
+.milestone-timeline {
+  padding-left: 10px;
+}
+.border-start {
+  border-left: 2px solid #dee2e6 !important;
+}
+.card {
+  border-radius: 12px;
+}
+.badge {
+  padding: 8px 12px;
+  border-radius: 6px;
+}

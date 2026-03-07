@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+
+  user-db:
+    image: postgres:15-alpine
+    container_name: unistage-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: Profile_db
+    ports:
+      - "5432:5432"
+
+  auth-db:
+    image: postgres:15-alpine
+    container_name: unistage-auth-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: auth_db
+    ports:
+      - "5433:5432"
+
+  document-db:
+    image: mongo:latest
+    container_name: unistage-mongodb
+    ports:
+      - "27017:27017"
+
+  profile-service:
+    build: ./profile-service
+    container_name: profile-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - user-db
+    environment:
+      - DB_HOST=user-db
+      - EUREKA_HOST=host.docker.internal
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - auth-db
+    environment:
+      - AUTH_DB_HOST=auth-db
+      - EUREKA_HOST=host.docker.internal
+
+  document-service:
+    build: ./document-service
+    container_name: document-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - document-db
+    environment:
+      - MONGO_HOST=document-db
+      - EUREKA_HOST=host.docker.internal
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_HOST=host.docker.internal

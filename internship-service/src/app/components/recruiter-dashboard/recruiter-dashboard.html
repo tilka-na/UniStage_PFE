@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-[#051125] text-white p-8"> <div class="max-w-6xl mx-auto">
+    
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h2 class="text-[#F3A712] text-xs font-bold uppercase mb-2">Espace Recruteur</h2>
+        <h1 class="text-3xl font-bold/">Tableau de Bord</h1>
+      </div>
+      <a routerLink="/" class="text-gray-400 hover:text-white text-sm underline">
+        Retour aux offres
+      </a>
+    </div>
+
+    <div class="bg-[#0F2038] rounded-xl border border-gray-700 overflow-hidden shadow-2xl">
+      <table class="w-full text-left">
+        <thead class="bg-[#1a2c4e] text-[#F3A712] uppercase text-xs font-bold tracking-wider">
+          <tr>
+            <th class="p-4">ID Étudiant</th>
+            <th class="p-4">Offre Ciblée</th>
+            <th class="p-4">Motivation</th>
+            <th class="p-4">Statut Actuel</th>
+            <th class="p-4 text-right">Décision</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700 text-sm">
+          @for (candidat of candidatures; track candidat.id) {
+            <tr class="hover:bg-[#152642] transition duration-150">
+              <td class="p-4 font-mono text-gray-300">#{{ candidat.etudiantId }}</td>
+              <td class="p-4 text-white font-medium">Offre #{{ candidat.stage?.id }}</td>
+              <td class="p-4 text-gray-400 italic max-w-xs truncate">
+                "{{ candidat.motivation }}"
+              </td>
+              <td class="p-4">
+                <span class="px-2 py-1 rounded-full text-xs font-bold border"
+                  [class]="candidat.statut === 'Accepté' ? 'bg-green-900/30 text-green-400 border-green-500/30' : 
+                           (candidat.statut === 'Refusé' ? 'bg-red-900/30 text-red-400 border-red-500/30' : 
+                           'bg-yellow-900/30 text-yellow-400 border-yellow-500/30')">
+                  {{ candidat.statut || 'En attente' }}
+                </span>
+              </td>
+              <td class="p-4 flex gap-2 justify-end">
+                <button (click)="traiterCandidature(candidat.id, 'Accepté')" 
+                        class="p-2 bg-green-600 text-white rounded hover:bg-green-500 transition shadow" title="Accepter">
+                  ✔
+                </button>
+                <button (click)="traiterCandidature(candidat.id, 'Refusé')" 
+                        class="p-2 bg-red-600 text-white rounded hover:bg-red-500 transition shadow" title="Refuser">
+                  ✖
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="p-12 text-center text-gray-500 flex flex-col items-center">
+                <span class="text-4xl mb-2"></span>
+                Aucune candidature reçue pour le moment.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

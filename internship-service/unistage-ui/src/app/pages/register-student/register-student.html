@@ -1,0 +1,80 @@
+<section class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+  <div class="w-full max-w-lg bg-slate-800 rounded-xl shadow-2xl border border-slate-700 overflow-hidden relative">
+
+    <div class="absolute left-0 top-0 bottom-0 w-2 bg-amber-500"></div>
+
+    <div class="p-8 pl-10">
+
+      <div class="mb-6">
+        <h2 class="text-3xl font-bold text-white">Inscription</h2>
+        <p class="text-slate-400 mt-2">Rejoignez la plateforme des opportunités médicales</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-lg mb-6">
+        <button
+          (click)="role = 'student'"
+          [class]="role === 'student' ? 'bg-amber-500 text-slate-900 shadow' : 'text-slate-400 hover:text-white'"
+          class="flex items-center justify-center py-2 text-sm font-bold rounded-md transition-all">
+          👨‍⚕️ Étudiant
+        </button>
+        <button
+          (click)="role = 'company'"
+          [class]="role === 'company' ? 'bg-amber-500 text-slate-900 shadow' : 'text-slate-400 hover:text-white'"
+          class="flex items-center justify-center py-2 text-sm font-bold rounded-md transition-all">
+          🏥 Recruteur
+        </button>
+      </div>
+
+      <form>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-slate-300 text-sm font-medium mb-2">Nom</label>
+            <input type="text" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+          </div>
+          <div>
+            <label class="block text-slate-300 text-sm font-medium mb-2">Prénom</label>
+            <input type="text" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+          </div>
+        </div>
+
+        <div class="mb-4" *ngIf="role === 'student'">
+          <label class="block text-slate-300 text-sm font-medium mb-2">Niveau d'étude</label>
+          <select class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+            <option>Externe</option>
+            <option>Interne</option>
+            <option>Résident</option>
+          </select>
+        </div>
+
+        <div class="mb-4" *ngIf="role === 'company'">
+          <label class="block text-slate-300 text-sm font-medium mb-2">Nom de l'établissement / Cabinet</label>
+          <input type="text" placeholder="Ex: Clinique Agdal" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-medium mb-2">Email</label>
+          <input type="email" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-slate-300 text-sm font-medium mb-2">Mot de passe</label>
+          <input type="password" class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5">
+        </div>
+
+        <button type="button" class="w-full text-slate-900 bg-amber-500 hover:bg-amber-400 font-bold rounded-lg text-sm px-5 py-3 text-center transition-all">
+          S'inscrire en tant que {{ role === 'student' ? 'Stagiaire' : 'Recruteur' }}
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-slate-400">
+          Déjà un compte ?
+          <a routerLink="/login" class="font-medium text-amber-500 hover:text-amber-400 cursor-pointer">
+            Se connecter
+          </a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
