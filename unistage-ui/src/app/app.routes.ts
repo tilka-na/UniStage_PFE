@@ -1,33 +1,35 @@
 import { Routes } from '@angular/router';
 
-// --- YOUR IMPORTS ---
 import { StudentDashboardComponent } from './pages/student-dashboard/student-dashboard.component';
-import { CompanyDashboardComponent } from './pages/company-dashboard/company-dashboard.component';
+
+
 import { StudentProfileComponent } from './pages/student-profile/student-profile.component';
-import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password.component';
 import { AuthGuard } from './guards/auth.guard';
-// --- YOUR FRIEND'S IMPORTS (Corrected Paths) ---
+import { adminGuard } from './guards/admin.guard';
 import { OffresListComponent } from './components/offres-list/offres-list';
 import { OffreDetailsComponent } from './components/offre-details/offre-details';
 import { RecruiterDashboardComponent } from './components/recruiter-dashboard/recruiter-dashboard';
 import { InternshipDetailsComponent } from './components/internship-details/internship-details';
-export const routes: Routes = [
-  // YOUR MAIN ROUTE
-  { path: '', component: HomeComponent },
 
-  // YOUR AUTH ROUTES
+export const routes: Routes = [
+  // PUBLIC ROUTES
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'offres', component: OffresListComponent },
+  { path: 'offres/:id', component: OffreDetailsComponent },
+  { path: 'internship/:id', component: InternshipDetailsComponent },
+  { path: 'internship', component: InternshipDetailsComponent },
 
-  // YOUR STUDENT ROUTES
+  // STUDENT ROUTES
   {
     path: 'student',
-    canActivate: [AuthGuard], // The Guard checks the token first
+    canActivate: [AuthGuard],
     data: { role: 'STUDENT' },
     children: [
       { path: 'dashboard', component: StudentDashboardComponent },
@@ -35,19 +37,15 @@ export const routes: Routes = [
     ]
   },
 
-  // YOUR FRIEND'S EXACT ROUTES
+  // RECRUITER ROUTES
   {
-      path: 'dashboard',
-      component: RecruiterDashboardComponent,
-      canActivate: [AuthGuard],
-      data: { role: 'RECRUITER' } // Only Recruiters can enter here
-    },
-  { path: 'offres', component: OffresListComponent },
-  { path: 'offres/:id', component: OffreDetailsComponent },
-  { path: 'internship/:id', component: InternshipDetailsComponent },
-  { path: 'internship', component: InternshipDetailsComponent },
+    path: 'dashboard',
+    component: RecruiterDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'RECRUITER' }
+  },
 
-  // 404 FALLBACK (Must remain at the very bottom!)
+
+  // 404 FALLBACK (Must be last)
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
-

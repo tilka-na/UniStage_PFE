@@ -19,100 +19,84 @@ interface Experience {
   templateUrl: './student-profile.component.html' // Assuming you keep the HTML template here or in a file
 })
 export class StudentProfileComponent implements OnInit {
-
-  // --- VARIABLES ---
-  fullName: string = '';
-  email: string = '';
-  phone: string = '';
-  university: string = '';
-  skills: string = '';
-  experiences: Experience[] = [];
+  // Single merged object initialized with empty strings to avoid 'undefined' in HTML
+  profile: StudentProfile = {
+    firstName: '',
+    lastName: '',
+    phone: '',
+    university: '',
+    cne: '',
+    major: '',
+    level: '',
+    skills: '',
+    experiences: []
+  };
 
   cvFile: File | null = null;
   coverLetterFile: File | null = null;
-
   isSubmitting: boolean = false;
   error: string = '';
   success: string = '';
 
-  constructor(
-    private profileService: ProfileService, // Corrected Service Name
-    private router: Router
-  ) {}
+  constructor(private profileService: ProfileService, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchProfile();
   }
 
   fetchProfile() {
-    // 1. Use profileService (matching the constructor)
-    // 2. Use getMyStudentProfile() (matching your ProfileService)
     this.profileService.getMyStudentProfile().subscribe({
-      next: (profile: any) => {
-        if(profile) {
-          this.fullName = (profile.firstName || '') + ' ' + (profile.lastName || '');
-          this.email = profile.email || '';
-          this.phone = profile.phone || '';
-          this.university = profile.university || '';
-          this.skills = profile.skills || '';
-          this.experiences = profile.experiences || [];
+      next: (data: StudentProfile) => {
+        if (data) {
+          // Merges all incoming database fields into our local profile object
+          this.profile = data;
         }
       },
-      error: (err: any) => console.log('Profil non trouvé ou erreur serveur.', err)
+      error: (err) => console.log('Profil non trouvé ou erreur.', err)
     });
   }
+  onSubmit() {
+    this.isSubmitting = true;
 
-  // --- HELPER METHODS ---
-  addExperience() {
-    this.experiences.push({ title: '', organization: '', period: '', description: '' });
+    // Use 'as File' or ensure the service accepts null to clear the red error
+    this.profileService.updateMyStudentProfile(
+      this.profile,
+      this.cvFile || undefined,
+      this.coverLetterFile || undefined
+    )
+      .subscribe({
+        next: (res) => {
+          this.success = "Profil mis à jour avec succès !";
+          this.isSubmitting = false;
+          this.profile = res;
+        },
+        error: (err) => {
+          this.error = "Erreur lors de la sauvegarde.";
+          this.isSubmitting = false;
+        }
+      });
   }
-
-  removeExperience(index: number) {
-    this.experiences.splice(index, 1);
-  }
-
   onCvSelected(event: any) {
-    this.cvFile = event.target.files[0];
+    const file = event.target.files[0];
+    if (file) {
+      this.cvFile = file;
+      console.log('CV selected:', file.name);
+    }
   }
 
   onCoverLetterSelected(event: any) {
-    this.coverLetterFile = event.target.files[0];
+    const file = event.target.files[0];
+    if (file) {
+      this.coverLetterFile = file;
+      console.log('Cover letter selected:', file.name);
+    }
+  }
+  addExperience() {
+    if (!this.profile.experiences) { this.profile.experiences = []; }
+    this.profile.experiences.push({ title: '', organization: '', period: '', description: '' });
   }
 
-  // --- SUBMIT LOGIC ---
-  onSubmit() {
-    this.error = '';
-    this.success = '';
-
-    if (!this.fullName || !this.phone || !this.university) {
-      this.error = 'Veuillez remplir les champs obligatoires.';
-      return;
-    }
-
-    this.isSubmitting = true;
-
-    // Map the local variables back to the StudentProfile structure
-    const profileData: any = {
-      firstName: this.fullName.split(' ')[0],
-      lastName: this.fullName.split(' ').slice(1).join(' ') || '',
-      phone: this.phone,
-      university: this.university,
-      skills: this.skills,
-      experiences: this.experiences
-    };
-
-    // Use updateMyStudentProfile() (matching your ProfileService)
-    this.profileService.updateMyStudentProfile(profileData, this.cvFile || undefined, this.coverLetterFile || undefined)
-      .subscribe({
-        next: (response: any) => {
-          this.isSubmitting = false;
-          this.success = 'Profil mis à jour avec succès !';
-        },
-        error: (err: any) => {
-          this.isSubmitting = false;
-          console.error('Update failed', err);
-          this.error = 'Erreur: ' + (err.error?.message || 'Problème de connexion');
-        }
-      });
+  removeExperience(index: number) {
+    this.profile.experiences?.splice(index, 1);
   }
 }

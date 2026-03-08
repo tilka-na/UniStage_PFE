@@ -21,4 +21,4 @@ eureka:
       defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
 
 jwt:
-  secret: my-secret-key-123456
+  secret: unistage_secret_unistage_secret_123456

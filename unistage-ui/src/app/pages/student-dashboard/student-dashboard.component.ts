@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterLink } from '@angular/router';
-
+import { OnInit } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
@@ -66,8 +67,34 @@ import { Router, RouterModule, RouterLink } from '@angular/router';
     </div>
   `
 })
-export class StudentDashboardComponent {
-  studentName = 'Mohammed';
+export class StudentDashboardComponent implements OnInit {
+  studentName = 'User';
+
+  // 1. You MUST inject the router here
   constructor(private router: Router) {}
-  goToProfile() { this.router.navigate(['/student/profile']); }
+
+  ngOnInit() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+
+        // Extracts "nadia" from "nadia@email.com"
+        if (decoded.sub) {
+          this.studentName = decoded.sub.split('@')[0];
+        }
+
+        // If you decide to add 'firstName' to your Java JWT later:
+        // if (decoded.firstName) { this.studentName = decoded.firstName; }
+
+      } catch (error) {
+        console.error("Invalid token format", error);
+      }
+    }
+  }
+
+  // 2. This will now work because 'this.router' is defined
+  goToProfile() {
+    this.router.navigate(['/student/profile']);
+  }
 }

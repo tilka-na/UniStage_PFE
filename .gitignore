@@ -15,7 +15,8 @@ dist/
 .settings
 .springBeans
 .sts4-cache
-
+# Ignore uploaded student documents
+uploads/
 ### IntelliJ IDEA ###
 .idea
 *.iws

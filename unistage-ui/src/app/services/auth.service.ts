@@ -46,6 +46,18 @@ export class AuthService {
       })
     );
   }
+// Add these to your AuthService class
+isAdmin(): boolean {
+  return this.getRole() === 'ADMIN';
+}
+
+isEncadrant(): boolean {
+  return this.getRole() === 'ENCADRANT';
+}
+
+isStudent(): boolean {
+  return this.getRole() === 'STUDENT';
+}
   forgotPassword(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/forgot-password`, { email });
   }

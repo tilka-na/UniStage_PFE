@@ -14,13 +14,10 @@ public class DocumentService {
 
     private final DocumentRepository repository;
 
-    public DocumentMetadata saveDocument(
-            Long userId,
-            DocType type,
-            String storageUrl,
-            Long internshipId
-    ) {
+    // DocumentService.java
+    public DocumentMetadata saveDocument(Long userId, DocType type, String storageUrl, Long internshipId) {
         DocumentMetadata doc = new DocumentMetadata();
+        // No need to set ID manually if you want Mongo to generate it
         doc.setUserId(userId);
         doc.setType(type);
         doc.setUploadDate(LocalDateTime.now());
