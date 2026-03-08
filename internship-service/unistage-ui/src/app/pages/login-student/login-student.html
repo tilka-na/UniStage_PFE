@@ -1,0 +1,58 @@
+<section class="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-slate-800 rounded-xl shadow-2xl border border-slate-700 overflow-hidden relative">
+
+    <div class="absolute left-0 top-0 bottom-0 w-2 bg-amber-500"></div>
+
+    <div class="p-8 pl-10"> <div class="mb-8">
+      <h2 class="text-3xl font-bold text-white">Connexion</h2>
+      <p class="text-slate-400 mt-2">Accédez à votre espace stagiaire ou recruteur</p>
+    </div>
+
+      <form>
+        <div class="mb-6">
+          <label class="block text-slate-300 text-sm font-medium mb-2" for="email">
+            Email Professionnel
+          </label>
+          <input
+            type="email"
+            id="email"
+            placeholder="exemple@hopital.ma"
+            class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-3 placeholder-slate-500 transition-colors"
+          >
+        </div>
+
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-slate-300 text-sm font-medium" for="password">
+              Mot de passe
+            </label>
+            <a href="#" class="text-xs text-amber-500 hover:text-amber-400">Mot de passe oublié ?</a>
+          </div>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            class="w-full bg-slate-900 border border-slate-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-3 placeholder-slate-500 transition-colors"
+          >
+        </div>
+
+        <button
+          type="button"
+          class="w-full text-slate-900 bg-amber-500 hover:bg-amber-400 focus:ring-4 focus:outline-none focus:ring-amber-500/50 font-bold rounded-lg text-sm px-5 py-3 text-center transition-all"
+        >
+          Se Connecter
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-slate-400">
+          Vous n'avez pas de compte ?
+          <a routerLink="/register" class="font-medium text-amber-500 hover:text-amber-400 cursor-pointer">
+            Créer un compte
+          </a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>

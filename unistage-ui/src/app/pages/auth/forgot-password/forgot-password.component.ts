@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { AuthService } from '../../../services/auth.service';
+=======
+import { AuthService } from '../auth.service';
+>>>>>>> origin/feat-last-push
 
 @Component({
   selector: 'app-forgot-password',
@@ -66,11 +70,19 @@ export class ForgotPasswordComponent {
 
 
     this.authService.forgotPassword(this.email).subscribe({
+<<<<<<< HEAD
       next: (response:any) => {
         this.isLoading = false;
         this.submitted = true;
       },
       error: (error:any) => {
+=======
+      next: (response) => {
+        this.isLoading = false;
+        this.submitted = true;
+      },
+      error: (error) => {
+>>>>>>> origin/feat-last-push
         console.error('Erreur lors de l\'envoi:', error);
         this.isLoading = false;
         this.submitted = true;

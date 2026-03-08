@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+<<<<<<< HEAD
 import { AuthService } from '../../../services/auth.service';
+=======
+
+>>>>>>> origin/feat-last-push
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -27,6 +31,7 @@ import { AuthService } from '../../../services/auth.service';
         </div>
 
         <form (ngSubmit)="onRegister()" class="space-y-4">
+<<<<<<< HEAD
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prénom</label>
@@ -35,22 +40,42 @@ import { AuthService } from '../../../services/auth.service';
             <div>
               <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nom</label>
               <input type="text" [(ngModel)]="registerData.lastName" name="lastName" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+=======
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prénom</label>
+              <input type="text" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nom</label>
+              <input type="text" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+>>>>>>> origin/feat-last-push
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email</label>
+<<<<<<< HEAD
             <input type="email" [(ngModel)]="registerData.email" name="email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+=======
+            <input type="email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+>>>>>>> origin/feat-last-push
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Mot de passe</label>
+<<<<<<< HEAD
             <input type="password" [(ngModel)]="registerData.password" name="password" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+=======
+            <input type="password" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+>>>>>>> origin/feat-last-push
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Je suis un(e)...</label>
             <div class="grid grid-cols-2 gap-3">
+<<<<<<< HEAD
               <button type="button" (click)="setRole('STUDENT')"
                       [class]="registerData.role === 'STUDENT' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
                       class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
@@ -58,6 +83,15 @@ import { AuthService } from '../../../services/auth.service';
               </button>
               <button type="button" (click)="setRole('RECRUITER')"
                       [class]="registerData.role === 'RECRUITER' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+=======
+              <button type="button" (click)="role='STUDENT'"
+                      [class]="role === 'STUDENT' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+                      class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
+                Étudiant
+              </button>
+              <button type="button" (click)="role='RECRUITER'"
+                      [class]="role === 'RECRUITER' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+>>>>>>> origin/feat-last-push
                       class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
                 Recruteur
               </button>
@@ -83,6 +117,7 @@ import { AuthService } from '../../../services/auth.service';
   `
 })
 export class RegisterComponent {
+<<<<<<< HEAD
   isLoading = false;
 
   // This object perfectly matches your Spring Boot backend's expected JSON
@@ -122,9 +157,28 @@ export class RegisterComponent {
         alert('Échec de l\'inscription. Vérifiez vos informations.');
       }
     });
+=======
+  role: 'STUDENT' | 'RECRUITER' = 'STUDENT';
+  isLoading = false;
+
+  constructor(private router: Router) {}
+
+  onRegister() {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.isLoading = false;
+      // Navigate based on role
+      if(this.role === 'STUDENT') this.router.navigate(['/student/profile']);
+      else this.router.navigate(['/company/dashboard']);
+    }, 1500);
+>>>>>>> origin/feat-last-push
   }
 
   signupWithGoogle() {
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/feat-last-push
 }

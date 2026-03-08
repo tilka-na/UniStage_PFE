@@ -21,7 +21,6 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -29,7 +28,7 @@ public class AuthController {
 
             LoginRequest autoLoginRequest = new LoginRequest();
             autoLoginRequest.setEmail(request.getEmail());
-            autoLoginRequest.setPassword(request.getPassword()); // Assumes RegisterRequest has getPassword()
+            autoLoginRequest.setPassword(request.getPassword());
 
             AuthResponse response = authService.login(autoLoginRequest);
 
@@ -40,7 +39,6 @@ public class AuthController {
                     .body(Collections.singletonMap("message", e.getMessage()));
         }
     }
-
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);

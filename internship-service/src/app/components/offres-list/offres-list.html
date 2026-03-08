@@ -1,0 +1,94 @@
+<div class="min-h-screen bg-[#051125] text-white p-8">
+  <div class="max-w-6xl mx-auto">
+    
+    <div class="mb-10">
+      <h2 class="text-[#F3A712] text-xs font-bold uppercase mb-2">Opportunités</h2>
+      <h1 class="text-3xl font-bold mb-6">Offres de Stage & Garde</h1>
+      <div class="relative">
+        <input type="text" [(ngModel)]="motCle" placeholder="Chercher par spécialité..." 
+               class="w-full bg-[#0F2038] border-2 border-[#F3A712]/30 rounded-xl p-4 pl-12 focus:border-[#F3A712] outline-none transition">
+        <span class="absolute left-4 top-4 text-gray-400"></span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      @for (offre of offresFiltrees; track offre.id) {
+       
+<div class="bg-[#0F2038] border border-gray-800 rounded-2xl p-6 hover:border-[#F3A712] transition-all group">
+  
+  <div class="flex justify-between mb-4">
+    <span class="bg-[#1a2c4e] text-[#F3A712] px-3 py-1 rounded-full text-xs font-bold border border-[#F3A712]/20">Stage</span>
+    <span class="text-gray-500 text-xs">📍 {{ offre.localisation }}</span>
+  </div>
+  
+  <h3 class="text-xl font-bold mb-1 group-hover:text-[#F3A712]">{{ offre.titre }}</h3>
+  <p class="text-gray-400 text-sm mb-6">{{ offre.entreprise || 'Hôpital' }}</p>
+  
+  <div class="flex justify-between items-center">
+    
+    <div class="text-gray-500 text-xs flex items-center gap-2">
+      🕒 Durée: {{ offre.duree || 'N/A' }}
+    </div>
+
+    <div class="flex items-center gap-3"> 
+      <button (click)="openModal(offre)"
+              class="px-6 py-2 bg-[#F3A712] text-[#051125] font-bold rounded-lg hover:bg-white transition shadow-lg">
+        POSTULER
+      </button>
+
+      <button  [routerLink]="['/offres', offre.id]" class="bg-transparent border border-[#F3A712] text-[#F3A712] px-4 py-2 rounded-lg font-bold hover:bg-[#F3A712] hover:text-[#051125] transition">
+        Voir Détails
+      </button>
+
+    </div>
+
+  </div>
+</div>
+      }
+    @if (offresFiltrees.length === 0) {
+      <div class="text-center py-20 text-gray-500">
+        Aucune offre trouvée. Vérifiez le Backend (Port 8083).
+      </div>
+    }
+  </div>
+  @if (showModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#0F2038] border border-gray-700 w-full max-w-lg rounded-2xl shadow-2xl">
+      
+      <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+        <div>
+          <h3 class="text-xl font-bold text-white">Postuler maintenant</h3>
+          <p class="text-[#F3A712] text-sm">{{ selectedOffre?.titre }}</p>
+        </div>
+        <button (click)="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-gray-400 mb-1 text-sm">ID Étudiant</label>
+          <input type="number" [(ngModel)]="candidature.etudiantId"
+                 class="w-full bg-[#051125] border border-gray-600 rounded-lg p-3 text-white focus:border-[#F3A712] outline-none">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1 text-sm">Lettre de Motivation</label>
+          <textarea rows="4" [(ngModel)]="candidature.motivation"
+                    class="w-full bg-[#051125] border border-gray-600 rounded-lg p-3 text-white focus:border-[#F3A712] outline-none"
+                    placeholder="Pourquoi ce stage vous intéresse ?"></textarea>
+        </div>
+      </div>
+
+      <div class="p-4 bg-[#051125]/50 flex gap-3 justify-end rounded-b-2xl">
+        <button (click)="closeModal()" class="px-5 py-2 rounded-lg text-gray-300 hover:bg-gray-800">
+          Annuler
+        </button>
+        <button (click)="submitCandidature()" 
+                class="px-6 py-2 rounded-lg bg-[#F3A712] text-[#051125] font-bold hover:bg-white transition">
+          Envoyer la demande
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+</div>

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../services/auth.service'; // Adjust path as needed
+import { AuthService } from '../../../services/auth.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -66,8 +66,6 @@ import { AuthService } from '../../../services/auth.service'; // Adjust path as 
     </div>
   `
 })
-
-
 export class LoginComponent {
   email = '';
   password = '';
@@ -77,7 +75,6 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
-    // Basic validation
     if (!this.email || !this.password) {
       this.errorMessage = "Veuillez remplir tous les champs.";
       return;
@@ -91,11 +88,8 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.isLoading = false;
-
-        // Get the role from the token (handled by your AuthService)
         const role = this.authService.getRole();
 
-        // Professional redirection based on role
         if (role === 'ADMIN') {
           this.router.navigate(['/admin/users']);
         } else if (role === 'ENCADRANT') {
@@ -103,21 +97,17 @@ export class LoginComponent {
         } else if (role === 'RECRUITER') {
           this.router.navigate(['/dashboard']);
         } else {
-          // Default for Students
           this.router.navigate(['/student/dashboard']);
         }
       },
       error: (err: any) => {
         this.isLoading = false;
         this.errorMessage = "Email ou mot de passe incorrect.";
-        console.error('Login failed', err);
       }
     });
   }
 
   loginWithGoogle() {
-    // Redirect to your Spring Boot OAuth2 endpoint
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
 }
-

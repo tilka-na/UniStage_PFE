@@ -53,7 +53,7 @@ public class InternshipController {
         InternshipOffer updatedOffer = service.updateOffer(id, offer);
         return ResponseEntity.ok(updatedOffer);
     }
- // 1. Jib details dyal stage (Milestones + Evaluations)
+    // 1. Jib details dyal stage (Milestones + Evaluations)
     @GetMapping("/{id}")
     public ResponseEntity<Internship> getDetails(@PathVariable Long id) {
         return service.getInternshipDetails(id)
@@ -73,6 +73,12 @@ public class InternshipController {
     public ResponseEntity<Evaluation> addEvaluation(@PathVariable Long id, @RequestBody Evaluation evaluation) {
         return ResponseEntity.ok(service.addEvaluation(id, evaluation));
     }
-    
-    // I removed the duplicate @GetMapping("/{id}") that was here!
+    // Zidi hada f InternshipController dyal port 8084
+@GetMapping("/{id}")
+public ResponseEntity<Internship> getInternshipDetails(@PathVariable Long id) {
+    return service.getInternshipDetails(id) // L-methode li 3ndek f l-service
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+}
+
 }
