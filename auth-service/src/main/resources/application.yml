@@ -22,8 +22,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ""
-            client-secret: ""
+            client-id: 6180071-0e0pq756du7pbelhef8ue6ilu9ec26l6.apps.googleusercontent.com81617
+            client-secret: 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
   jpa:
     hibernate:
       ddl-auto: update
