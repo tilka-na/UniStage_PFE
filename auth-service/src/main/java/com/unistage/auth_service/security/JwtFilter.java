@@ -7,7 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.beans.factory.annotation.Value;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,7 +20,12 @@ import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private final Key SECRET_KEY =Keys.hmacShaKeyFor("unistage_secret_unistage_secret_123456".getBytes());
+    @Value("${jwt.secret}")
+    private String secretString;
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretString.getBytes());
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -38,24 +43,32 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         String token = authHeader.substring(7);
         try {
-            //Parse JWT
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            String email = claims.getSubject();
-            Long userId = claims.get("userId", Long.class);
-            String role = claims.get("role", String.class);
-            //Create authentication
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // Save in security context
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            // Fix 1: Extract userId safely (handles Integer vs Long issues)
+            Object userIdObj = claims.get("userId");
+            Long userId = (userIdObj instanceof Number) ? ((Number) userIdObj).longValue() : null;
+
+            // Fix 2: Null check for role to prevent "ROLE_null"
+            String role = claims.get("role", String.class);
+
+            if (userId != null && role != null) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userId,
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                );
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+
         } catch (Exception e) {
-            // Invalid token
+            // TEMPORARY: Add this to see the real error in your console!
+            System.out.println("JWT Verification Failed: " + e.getMessage());
+            SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(request, response);
     }

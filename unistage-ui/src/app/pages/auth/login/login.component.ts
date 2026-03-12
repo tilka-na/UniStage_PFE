@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -71,26 +72,42 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
-    this.errorMessage = '';
-    this.isLoading = true;
+    if (!this.email || !this.password) {
+      this.errorMessage = "Veuillez remplir tous les champs.";
+      return;
+    }
 
-    // Simulate API Call
-    setTimeout(() => {
-      this.isLoading = false;
-      if (this.email && this.password) {
-        this.router.navigate(['/student/dashboard']);
-      } else {
-        this.errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const credentials = { email: this.email, password: this.password };
+
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        const role = this.authService.getRole();
+
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin/users']);
+        } else if (role === 'ENCADRANT') {
+          this.router.navigate(['/encadrant/dashboard']);
+        } else if (role === 'RECRUITER') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/student/dashboard']);
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.errorMessage = "Email ou mot de passe incorrect.";
       }
-    }, 1500);
+    });
   }
 
   loginWithGoogle() {
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
 }
-
-

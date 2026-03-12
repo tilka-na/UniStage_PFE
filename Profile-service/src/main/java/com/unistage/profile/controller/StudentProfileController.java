@@ -12,7 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 @RestController
-@RequestMapping("/api/v1/students")
+@RequestMapping("/api/students")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+
 public class StudentProfileController {
 
     private final StudentProfileService studentService;

@@ -9,30 +9,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
 public class StudentProfileService {
 
     private final StudentProfileRepository studentRepo;
-    private final String UPLOAD_DIR = "uploads/";
+    private final String UPLOAD_DIR = "uploads/documents/";
 
-    // --- ADDED STANDARD CONSTRUCTOR ---
     public StudentProfileService(StudentProfileRepository studentRepo) {
         this.studentRepo = studentRepo;
     }
 
-    public StudentProfile findByUserId(Long userId) {
-        return studentRepo.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
-    }
-    // Update this method in StudentProfileService.java
     public StudentProfile updateProfileWithFiles(StudentProfile newProfile, MultipartFile cv, MultipartFile letter) {
-        // BUG FIX: Fetch existing by userId first
         StudentProfile existing = studentRepo.findByUserId(newProfile.getUserId())
                 .orElse(new StudentProfile());
 
-        // Map fields manually to ensure the ID stays the same
         existing.setUserId(newProfile.getUserId());
         existing.setFirstName(newProfile.getFirstName());
         existing.setLastName(newProfile.getLastName());
@@ -42,10 +35,10 @@ public class StudentProfileService {
         existing.setMajor(newProfile.getMajor());
         existing.setLevel(newProfile.getLevel());
 
-        // Handling experiences list (Clear and add to keep JPA relationship intact)
-        if(newProfile.getExperiences() != null) {
+        if (newProfile.getExperiences() != null) {
             newProfile.getExperiences().forEach(exp -> exp.setStudent(existing));
-            if(existing.getExperiences() != null) {
+
+            if (existing.getExperiences() != null) {
                 existing.getExperiences().clear();
                 existing.getExperiences().addAll(newProfile.getExperiences());
             } else {
@@ -53,28 +46,34 @@ public class StudentProfileService {
             }
         }
 
-        // ... (Keep your existing file upload logic here) ...
         try {
             if (cv != null && !cv.isEmpty()) {
-                String fileName = UUID.randomUUID() + "_" + cv.getOriginalFilename();
-                Path path = Paths.get(UPLOAD_DIR + fileName);
-                Files.createDirectories(path.getParent());
-                Files.write(path, cv.getBytes());
-                existing.setCvUrl(path.toString()); // Save path to DB
+                existing.setCvUrl(storeFile(cv, "cv"));
             }
 
             if (letter != null && !letter.isEmpty()) {
-                String fileName = UUID.randomUUID() + "_" + letter.getOriginalFilename();
-                Path path = Paths.get(UPLOAD_DIR + fileName);
-                Files.createDirectories(path.getParent());
-                Files.write(path, letter.getBytes());
-                existing.setCoverLetterUrl(path.toString());
+                existing.setCoverLetterUrl(storeFile(letter, "letter"));
             }
         } catch (IOException e) {
-            throw new RuntimeException("Could not save files", e);
+            throw new RuntimeException("Erreur lors de l'enregistrement des fichiers : " + e.getMessage());
         }
 
-
         return studentRepo.save(existing);
+    }
+
+    private String storeFile(MultipartFile file, String type) throws IOException {
+        String fileName = type + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path targetPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize().resolve(fileName);
+
+        Files.createDirectories(targetPath.getParent());
+
+        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/api/students/documents/" + fileName;
+    }
+
+    public StudentProfile findByUserId(Long userId) {
+        return studentRepo.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profil non trouvé"));
     }
 }

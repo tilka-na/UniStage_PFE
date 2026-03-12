@@ -68,7 +68,11 @@ export class RecruiterDashboardComponent implements OnInit {
         this.isLoadingOffers = false;
         this.cdr.detectChanges();
       },
+<<<<<<< HEAD
+      error: (err:any) => { console.error(err); this.isLoadingOffers = false; }
+=======
       error: (err) => { console.error(err); this.isLoadingOffers = false; }
+>>>>>>> origin/feat-last-push
     });
   }
 
@@ -79,7 +83,11 @@ export class RecruiterDashboardComponent implements OnInit {
         if (this.selectedDomain) this.ouvrirDomaine(this.selectedDomain);
         this.cdr.detectChanges();
       },
+<<<<<<< HEAD
+      error: (err:any) => console.error(err)
+=======
       error: (err) => console.error(err)
+>>>>>>> origin/feat-last-push
     });
   }
 
@@ -87,7 +95,11 @@ export class RecruiterDashboardComponent implements OnInit {
   ouvrirDomaine(domaine: string): void {
     this.selectedDomain = domaine;
     this.filteredOffers = this.myOffers.filter(o => o.domain === domaine);
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> origin/feat-last-push
     // Logic dyal l-matching m3a l-offres dyal had domaine
     const offerIds = this.filteredOffers.map(o => o.id);
     this.filteredCandidatures = this.candidatures.filter(c => {
@@ -125,7 +137,11 @@ export class RecruiterDashboardComponent implements OnInit {
         this.isSubmitting = false;
         this.cdr.detectChanges();
       },
+<<<<<<< HEAD
+      error: (err:any) => {
+=======
       error: (err) => {
+>>>>>>> origin/feat-last-push
         this.isSubmitting = false;
         alert("Erreur : " + err.message);
       }
@@ -140,7 +156,11 @@ export class RecruiterDashboardComponent implements OnInit {
           if (this.selectedDomain) this.ouvrirDomaine(this.selectedDomain);
           alert('Supprimé avec succès.');
         },
+<<<<<<< HEAD
+        error: (err:any) => alert("Erreur: L'offre est liée à des candidatures !")
+=======
         error: (err) => alert("Erreur: L'offre est liée à des candidatures !")
+>>>>>>> origin/feat-last-push
       });
     }
   }
@@ -159,11 +179,19 @@ export class RecruiterDashboardComponent implements OnInit {
 
   // 4. L-API katsift f l-khfa bla ma t-bloqui l-user
   this.internshipService.updateCandidatureStatus(candidat.id, nouveauStatut).subscribe({
+<<<<<<< HEAD
+    next: (res: any) => {
+      // Hna l-API jawbet b s-seha, kolchi mezyan
+      console.log("C'est fait !");
+    },
+    error: (err:any) => {
+=======
     next: (res) => {
       // Hna l-API jawbet b s-seha, kolchi mezyan
       console.log("C'est fait !");
     },
     error: (err) => {
+>>>>>>> origin/feat-last-push
       // Ila tra mouchkil s-3ib (Server t-ta7), kan-rej3o l-statut l-9dim
       candidat.status = oldStatus;
       this.filteredCandidatures = [...this.filteredCandidatures];
@@ -195,14 +223,26 @@ export class RecruiterDashboardComponent implements OnInit {
     }
   }
 
+<<<<<<< HEAD
+  openOfferModal(): void {
+    this.isEditing = false;
+    this.currentEditId = null;
+    this.newOffer = this.initNewOffer();
+    this.showOfferModal = true;
+=======
   openOfferModal(): void { 
     this.isEditing = false;
     this.currentEditId = null;
     this.newOffer = this.initNewOffer();
     this.showOfferModal = true; 
+>>>>>>> origin/feat-last-push
   }
 
   closeOfferModal(): void { this.showOfferModal = false; }
   loadNotifications(): void { this.notificationService.getNotifications().subscribe(data => this.notifications = data); }
   voirCV(studentId: number): void { alert("Visualisation du CV de l'étudiant #" + studentId); }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/feat-last-push

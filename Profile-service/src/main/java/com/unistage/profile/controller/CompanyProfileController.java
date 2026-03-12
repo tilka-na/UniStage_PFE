@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 
-@RequestMapping("/api/v1/companies")
+@RequestMapping("/api/companies")
 public class CompanyProfileController {
 
     private final CompanyRepository companyRepo; // Assuming you have a Company entity/repo

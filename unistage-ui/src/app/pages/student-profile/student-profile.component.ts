@@ -2,8 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+<<<<<<< HEAD
+import { ProfileService } from '../../services/profile.service';
+import { StudentProfile } from '../../models/app-models'; // Import your interface
+=======
 import { HttpClient } from '@angular/common/http';
 import { StudentService } from '../../services/student.service'; // Ensure path is correct
+>>>>>>> origin/feat-last-push
 
 interface Experience {
   title: string;
@@ -16,6 +21,26 @@ interface Experience {
   selector: 'app-student-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
+<<<<<<< HEAD
+  templateUrl: './student-profile.component.html' // Assuming you keep the HTML template here or in a file
+})
+export class StudentProfileComponent implements OnInit {
+  // Single merged object initialized with empty strings to avoid 'undefined' in HTML
+  profile: StudentProfile = {
+    firstName: '',
+    lastName: '',
+    phone: '',
+    university: '',
+    cne: '',
+    major: '',
+    level: '',
+    skills: '',
+    experiences: []
+  };
+
+  cvFile: File | null = null;
+  coverLetterFile: File | null = null;
+=======
   template: `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 px-4 transition-colors duration-300">
       <div class="max-w-5xl mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 overflow-hidden">
@@ -124,10 +149,16 @@ export class StudentProfileComponent implements OnInit {
   cvFile: File | null = null;
   coverLetterFile: File | null = null;
 
+>>>>>>> origin/feat-last-push
   isSubmitting: boolean = false;
   error: string = '';
   success: string = '';
 
+<<<<<<< HEAD
+  constructor(private profileService: ProfileService, private router: Router) {}
+
+  ngOnInit(): void {
+=======
   constructor(
     private studentService: StudentService,
     private router: Router
@@ -135,10 +166,44 @@ export class StudentProfileComponent implements OnInit {
 
   ngOnInit(): void {
     // Optional: Load existing profile data here
+>>>>>>> origin/feat-last-push
     this.fetchProfile();
   }
 
   fetchProfile() {
+<<<<<<< HEAD
+    this.profileService.getMyStudentProfile().subscribe({
+      next: (data: StudentProfile) => {
+        if (data) {
+          // Merges all incoming database fields into our local profile object
+          this.profile = data;
+        }
+      },
+      error: (err) => console.log('Profil non trouvé ou erreur.', err)
+    });
+  }
+  onSubmit() {
+    this.isSubmitting = true;
+
+    // Use 'as File' or ensure the service accepts null to clear the red error
+    this.profileService.updateMyStudentProfile(
+      this.profile,
+      this.cvFile || undefined,
+      this.coverLetterFile || undefined
+    )
+      .subscribe({
+        next: (res) => {
+          this.success = "Profil mis à jour avec succès !";
+          this.isSubmitting = false;
+          this.profile = res;
+        },
+        error: (err) => {
+          this.error = "Erreur lors de la sauvegarde.";
+          this.isSubmitting = false;
+        }
+      });
+  }
+=======
     this.studentService.getMyProfile().subscribe({
       next: (profile: any) => {
         if(profile) {
@@ -169,10 +234,15 @@ export class StudentProfileComponent implements OnInit {
     this.experiences.splice(index, 1);
   }
 
+>>>>>>> origin/feat-last-push
   onCvSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.cvFile = file;
+<<<<<<< HEAD
+      console.log('CV selected:', file.name);
+=======
+>>>>>>> origin/feat-last-push
     }
   }
 
@@ -180,6 +250,18 @@ export class StudentProfileComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.coverLetterFile = file;
+<<<<<<< HEAD
+      console.log('Cover letter selected:', file.name);
+    }
+  }
+  addExperience() {
+    if (!this.profile.experiences) { this.profile.experiences = []; }
+    this.profile.experiences.push({ title: '', organization: '', period: '', description: '' });
+  }
+
+  removeExperience(index: number) {
+    this.profile.experiences?.splice(index, 1);
+=======
     }
   }
 
@@ -220,5 +302,6 @@ export class StudentProfileComponent implements OnInit {
           this.error = 'Erreur: ' + (err.error?.message || 'Problème de connexion');
         }
       });
+>>>>>>> origin/feat-last-push
   }
 }

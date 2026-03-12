@@ -21,18 +21,24 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             authService.register(request);
-            return ResponseEntity.ok(Collections.singletonMap("message", "User registered successfully"));
+
+            LoginRequest autoLoginRequest = new LoginRequest();
+            autoLoginRequest.setEmail(request.getEmail());
+            autoLoginRequest.setPassword(request.getPassword());
+
+            AuthResponse response = authService.login(autoLoginRequest);
+
+            return ResponseEntity.ok(response);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Collections.singletonMap("message", e.getMessage()));
         }
     }
-
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);

@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:postgresql://${AUTH_DB_HOST:localhost}:5432/auth_db
+    url: jdbc:postgresql://${AUTH_DB_HOST:localhost}:5432/Auth_db
     username: postgres
     password: 1234
 
@@ -10,7 +10,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: nadia.arrahime@gmail.com
-    password: bxew adnw injk hugm //i mean this
+    password: bxew adnw injk hugm
     properties:
       mail:
         smtp:
@@ -22,8 +22,9 @@ spring:
       client:
         registration:
           google:
-            client-id: 6180071-0e0pq756du7pbelhef8ue6ilu9ec26l6.apps.googleusercontent.com81617
-            client-secret: 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
+
+            client-id: 816176180071-0e0pq756du7pbelhef8ue6ilu9ec26l6.apps.googleusercontent.com # Hiding the real ID
+            client-secret: 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 # Hiding the real Secret
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,3 +39,5 @@ eureka:
   client:
     service-url:
       defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
+jwt:
+  secret: unistage_secret_unistage_secret_123456
