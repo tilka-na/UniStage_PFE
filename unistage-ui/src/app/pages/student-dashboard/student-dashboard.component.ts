@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterLink } from '@angular/router';
-<<<<<<< HEAD
 import { OnInit } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-=======
 
->>>>>>> origin/feat-last-push
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
@@ -71,7 +68,6 @@ import { jwtDecode } from 'jwt-decode';
     </div>
   `
 })
-<<<<<<< HEAD
 export class StudentDashboardComponent implements OnInit {
   studentName = 'User';
 
@@ -102,10 +98,5 @@ export class StudentDashboardComponent implements OnInit {
   goToProfile() {
     this.router.navigate(['/student/profile']);
   }
-=======
-export class StudentDashboardComponent {
-  studentName = 'Mohammed';
-  constructor(private router: Router) {}
-  goToProfile() { this.router.navigate(['/student/profile']); }
->>>>>>> origin/feat-last-push
+
 }

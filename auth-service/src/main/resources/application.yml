@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:postgresql://${AUTH_DB_HOST:localhost}:5432/Auth_db
+    url: jdbc:postgresql://unistage-postgres:5432/Auth_db
     username: postgres
     password: 1234
 

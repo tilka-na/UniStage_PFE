@@ -19,12 +19,9 @@ dist/
 .settings
 .springBeans
 .sts4-cache
-<<<<<<< HEAD
 # Ignore uploaded student documents
 uploads/
-=======
 
->>>>>>> origin/feat-last-push
 ### IntelliJ IDEA ###
 .idea
 *.iws

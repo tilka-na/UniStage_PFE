@@ -19,11 +19,8 @@ export interface Application {
   motivationLetter?: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   date: Date | string;
-<<<<<<< HEAD
   internshipOffer?: InternshipOffer;
-=======
-  internshipOffer?: InternshipOffer; 
->>>>>>> origin/feat-last-push
+
 }
 
 export interface Milestone {
@@ -47,11 +44,8 @@ export interface Internship {
   endDate?: string | Date;
   status: string;
   studentId: number;
-<<<<<<< HEAD
   applicationSource?: Application;
-=======
-  applicationSource?: Application; 
->>>>>>> origin/feat-last-push
+
   milestones?: Milestone[];
   evaluations?: Evaluation[];
 }
@@ -63,7 +57,6 @@ export interface Notification {
   isRead: boolean;
   type: 'INFO' | 'SUCCESS' | 'WARNING';
 }
-<<<<<<< HEAD
 export interface Company {
   id?: number;
   name: string;
@@ -125,5 +118,4 @@ export interface TutorProfile {
   department?: string;
   companyId?: number;
 }
-=======
->>>>>>> origin/feat-last-push
+

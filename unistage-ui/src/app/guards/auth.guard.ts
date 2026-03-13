@@ -14,7 +14,6 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       return false;
     }
-<<<<<<< HEAD
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       // Check if the token is expired (exp is in seconds, Date.now() is in ms)
@@ -24,11 +23,7 @@ export class AuthGuard implements CanActivate {
         this.router.navigate(['/login']);
         return false;
       }
-=======
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
->>>>>>> origin/feat-last-push
       const userRole = payload.role; // assuming JWT has role
 
       // Check route data

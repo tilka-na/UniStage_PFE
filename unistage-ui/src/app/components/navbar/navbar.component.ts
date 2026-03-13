@@ -97,7 +97,7 @@ export class NavbarComponent {
     document.documentElement.classList.toggle('dark');
   }
 
-  @HostListener('document:click', ['$event'])
+  @HostListener('document:click')
   onDocumentClick() {
     this.closeMenus();
   }
