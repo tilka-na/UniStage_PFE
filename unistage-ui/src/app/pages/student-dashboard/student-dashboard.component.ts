@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterLink } from '@angular/router';
-import { OnInit } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
+import { ProfileService } from '../../services/profile.service'; // Ensure this path is correct
 
 @Component({
   selector: 'app-student-dashboard',
@@ -10,11 +10,13 @@ import { jwtDecode } from 'jwt-decode';
   imports: [CommonModule, RouterModule, RouterLink],
   template: `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pb-12 transition-colors duration-300">
-
       <div class="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 pt-8 pb-12 px-6">
         <div class="max-w-7xl mx-auto">
-          <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">
-            Bonjour, <span class="text-orange-600">{{ studentName }}</span> 👋
+          <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
+            Bonjour, <span class="text-orange-600">{{ studentName }}</span>
+            <button (click)="goToProfile()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors" title="Modifier le nom">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
           </h1>
           <p class="mt-2 text-slate-500 dark:text-slate-400">Prêt à booster votre carrière aujourd'hui ?</p>
 
@@ -25,7 +27,7 @@ import { jwtDecode } from 'jwt-decode';
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Candidatures</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ applicationCount }}</p>
               </div>
             </div>
 
@@ -35,7 +37,7 @@ import { jwtDecode } from 'jwt-decode';
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Vues Profil</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ viewCount }}</p>
               </div>
             </div>
           </div>
@@ -44,59 +46,60 @@ import { jwtDecode } from 'jwt-decode';
 
       <div class="max-w-7xl mx-auto px-6 py-8">
         <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Que voulez-vous faire ?</h3>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          <div class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer" routerLink="/internships">
+          <div (click)="goToOffers()" class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer">
             <div class="h-12 w-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
             <h4 class="text-lg font-bold text-slate-900 dark:text-white">Trouver un stage</h4>
-            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Parcourez les offres exclusives et postulez en un clic.</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Parcourez les offres de stages réelles.</p>
           </div>
 
-          <div class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer" (click)="goToProfile()">
+          <div (click)="goToProfile()" class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer">
             <div class="h-12 w-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             </div>
             <h4 class="text-lg font-bold text-slate-900 dark:text-white">Mettre à jour mon profil</h4>
             <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Un profil complet augmente vos chances de 80%.</p>
           </div>
-
         </div>
       </div>
     </div>
   `
 })
 export class StudentDashboardComponent implements OnInit {
-  studentName = 'User';
+  studentName = 'Étudiant';
+  viewCount = 0;
+  applicationCount = 0;
 
-  // 1. You MUST inject the router here
-  constructor(private router: Router) {}
+  constructor(private router: Router, private profileService: ProfileService) {}
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
+    this.loadRealData();
+  }
 
-        // Extracts "nadia" from "nadia@email.com"
-        if (decoded.sub) {
-          this.studentName = decoded.sub.split('@')[0];
+  loadRealData() {
+    this.profileService.getMyStudentProfile().subscribe({
+      next: (profile) => {
+        if (profile) {
+          this.studentName = profile.firstName || this.getNameFromToken();
+          this.viewCount = (profile as any).viewCount || 0;
+          // You could also fetch real application counts here from an InternshipService
         }
-
-        // If you decide to add 'firstName' to your Java JWT later:
-        // if (decoded.firstName) { this.studentName = decoded.firstName; }
-
-      } catch (error) {
-        console.error("Invalid token format", error);
-      }
-    }
+      },
+      error: () => this.studentName = this.getNameFromToken()
+    });
   }
 
-  // 2. This will now work because 'this.router' is defined
-  goToProfile() {
-    this.router.navigate(['/student/profile']);
+  private getNameFromToken(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return 'Candidat';
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.sub.split('@')[0];
+    } catch { return 'Candidat'; }
   }
 
+  goToProfile() { this.router.navigate(['/student/profile']); }
+  goToOffers() { this.router.navigate(['/offres']); }
 }

@@ -6,7 +6,7 @@ import { InternshipService } from '../../services/internship.service';
 import { NotificationService } from '../../services/notification.service';
 import { Application, InternshipOffer, Notification } from '../../models/app-models';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
-
+import { Router } from '@angular/router';// n
 @Component({
   selector: 'app-recruiter-dashboard',
   standalone: true,
@@ -39,7 +39,8 @@ export class RecruiterDashboardComponent implements OnInit {
   constructor(
     private internshipService: InternshipService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -201,15 +202,16 @@ export class RecruiterDashboardComponent implements OnInit {
   }
 
 
-  openOfferModal(): void { 
+  openOfferModal(): void {
     this.isEditing = false;
     this.currentEditId = null;
     this.newOffer = this.initNewOffer();
-    this.showOfferModal = true; 
+    this.showOfferModal = true;
   }
 
   closeOfferModal(): void { this.showOfferModal = false; }
   loadNotifications(): void { this.notificationService.getNotifications().subscribe(data => this.notifications = data); }
-  voirCV(studentId: number): void { alert("Visualisation du CV de l'étudiant #" + studentId); }
-
+  voirCV(studentId: number): void {
+    this.router.navigate(['/offres/student-profile', studentId]);
+}
 }

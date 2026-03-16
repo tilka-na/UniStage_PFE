@@ -31,6 +31,7 @@ public class StudentProfile {
     private String level;
     private String cvUrl;
     private String coverLetterUrl;
+    private int viewCount = 0;
     public StudentProfile(){}
     public StudentProfile(Long id, Long userId, String firstName, String lastName, String cne, String phone, String university, String skills, String major, String level, String cvUrl, String coverLetterUrl, List<StudentExperience> experiences) {
         this.id = id;
@@ -151,7 +152,8 @@ public class StudentProfile {
     public void setExperiences(List<StudentExperience> experiences) {
         this.experiences = experiences;
     }
-
+    public int getViewCount() { return viewCount; }
+    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentExperience> experiences;
 }

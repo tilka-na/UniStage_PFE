@@ -64,4 +64,9 @@ public class StudentProfileController {
         studentRepo.deleteByUserId(userId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/view/{userId}")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'ADMIN')")
+    public StudentProfile getProfileForRecruiter(@PathVariable Long userId) {
+        return studentService.getProfileForEmployer(userId);
+    }
 }

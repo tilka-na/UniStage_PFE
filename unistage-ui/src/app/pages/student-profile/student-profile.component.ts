@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { StudentProfile } from '../../models/app-models';
 
@@ -9,104 +9,96 @@ import { StudentProfile } from '../../models/app-models';
   selector: 'app-student-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './student-profile.component.html' 
+  templateUrl: './student-profile.component.html'
 })
 export class StudentProfileComponent implements OnInit {
- 
+  // Model initialization
   profile: StudentProfile = {
     firstName: '',
     lastName: '',
     phone: '',
     university: '',
-    cne: '',
     major: '',
     level: '',
     skills: '',
     experiences: []
   };
-  get fullName(): string {
-    return `${this.profile.firstName} ${this.profile.lastName}`.trim();
-  }
-  set fullName(value: string) {
-    const parts = value.split(' ');
-    this.profile.firstName = parts[0] || '';
-    this.profile.lastName = parts.slice(1).join(' ') || '';
-  }
 
+  // State Management
+  isReadOnly = false;
+  isSubmitting = false;
+  error = '';
+  success = '';
   cvFile: File | null = null;
   coverLetterFile: File | null = null;
-  isSubmitting: boolean = false;
-  error: string = '';
-  success: string = '';
 
-  constructor(private profileService: ProfileService, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private profileService: ProfileService,
+    public router: Router
+  ) {}
 
-  ngOnInit(): void {
-    this.fetchProfile();
+  ngOnInit() {
+    // Detect if accessed via /offres/student-profile/:id
+    const idFromUrl = this.route.snapshot.paramMap.get('id');
+
+    if (idFromUrl) {
+      this.isReadOnly = true;
+      this.loadProfileForRecruiter(idFromUrl);
+    } else {
+      this.isReadOnly = false;
+      this.fetchProfile();
+    }
   }
 
+  // Used by Recruiter: Triggers the backend viewCount increment
+  loadProfileForRecruiter(id: string) {
+    this.profileService.getProfileForEmployer(id).subscribe({
+      next: (data) => {
+        this.profile = data;
+        if (!this.profile.experiences) this.profile.experiences = [];
+      },
+      error: () => this.error = "Impossible de charger le profil."
+    });
+  }
+
+  // Used by Student: Loads personal profile
   fetchProfile() {
     this.profileService.getMyStudentProfile().subscribe({
       next: (data: StudentProfile) => {
         if (data) {
-          this.profile = data;
+          this.profile = { ...this.profile, ...data };
           if (!this.profile.experiences) this.profile.experiences = [];
         }
-      },
-      error: (err) => console.log('Profil non trouvé ou erreur.', err)
+      }
     });
   }
 
+  // --- Form Logic ---
   addExperience() {
-    if (!this.profile.experiences) { this.profile.experiences = []; }
-    this.profile.experiences.push({ 
-      title: '', 
-      organization: '', 
-      period: '', 
-      description: '' 
-    });
+    if (this.isReadOnly) return;
+    this.profile.experiences?.push({ title: '', organization: '', period: '', description: '' });
   }
 
   removeExperience(index: number) {
+    if (this.isReadOnly) return;
     this.profile.experiences?.splice(index, 1);
   }
 
-  onCvSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) this.cvFile = file;
-  }
-
-  onCoverLetterSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) this.coverLetterFile = file;
-  }
+  onCvSelected(event: any) { this.cvFile = event.target.files[0]; }
+  onCoverLetterSelected(event: any) { this.coverLetterFile = event.target.files[0]; }
 
   onSubmit() {
-    this.error = '';
-    this.success = '';
-    
-    if (!this.profile.firstName || !this.profile.phone || !this.profile.university) {
-      this.error = 'Veuillez remplir les champs obligatoires (Nom, Téléphone, Université).';
-      return;
-    }
-
+    if (this.isReadOnly) return;
     this.isSubmitting = true;
-
-    this.profileService.updateMyStudentProfile(
-      this.profile,
-      this.cvFile || undefined,
-      this.coverLetterFile || undefined
-    ).subscribe({
-      next: (res) => {
-        this.success = "Profil mis à jour avec succès !";
-        this.isSubmitting = false;
-        this.profile = res;
-      },
-      error: (err) => {
-        this.error = "Erreur lors de la sauvegarde.";
-        this.isSubmitting = false;
-        console.error(err);
-      }
-    });
+    this.profileService.updateMyStudentProfile(this.profile, this.cvFile || undefined, this.coverLetterFile || undefined)
+      .subscribe({
+        next: (res) => {
+          this.success = "Profil mis à jour !";
+          this.profile = res;
+          this.isSubmitting = false;
+        },
+        error: () => { this.error = "Erreur de sauvegarde"; this.isSubmitting = false; }
+      });
   }
 }

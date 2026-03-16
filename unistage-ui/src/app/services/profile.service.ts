@@ -14,15 +14,13 @@ import {
 })
 export class ProfileService {
 
-  // Pointing to your API Gateway
   private baseUrl = 'http://localhost:8082/api';
-
+  private apiUrl = 'http://localhost:8084/api/students';
   constructor(private http: HttpClient) { }
 
-  // ==========================================
-  // --- 1. STUDENT PROFILES (/api/students)
-  // ==========================================
-
+  getProfileForEmployer(userId: string): Observable<StudentProfile> {
+    return this.http.get<StudentProfile>(`${this.apiUrl}/view/${userId}`);
+  }
   getMyStudentProfile(): Observable<StudentProfile> {
     return this.http.get<StudentProfile>(`${this.baseUrl}/students/me`);
   }

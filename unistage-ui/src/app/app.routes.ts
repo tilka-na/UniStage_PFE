@@ -41,6 +41,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { role: 'RECRUITER' }
   },
-
+// app.routes.ts
+{ path: 'offres/student-profile/:id', component: StudentProfileComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

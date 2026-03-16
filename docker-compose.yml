@@ -75,7 +75,7 @@ services:
       postgres:
         condition: service_started
       eureka-server:
-        condition: service_healthy
+        condition: service_started
     environment:
       DB_HOST: postgres
       EUREKA_HOST: eureka-server
