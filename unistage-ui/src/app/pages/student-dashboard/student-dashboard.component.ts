@@ -1,20 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, RouterLink } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { ProfileService } from '../../services/profile.service';
+import { StudentProfile } from '../../models/app-models';
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pb-12 transition-colors duration-300">
 
       <div class="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 pt-8 pb-12 px-6">
         <div class="max-w-7xl mx-auto">
-          <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">
-            Bonjour, <span class="text-orange-600">{{ studentName }}</span> 👋
+          <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
+            Bonjour,
+            <span class="text-orange-600">{{ studentData?.firstName || 'Étudiant' }}</span>
+
+            <button (click)="goToProfile()" class="group p-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-full transition-all">
+              <svg class="w-5 h-5 text-slate-400 group-hover:text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+              </svg>
+            </button>
           </h1>
-          <p class="mt-2 text-slate-500 dark:text-slate-400">Prêt à booster votre carrière aujourd'hui ?</p>
+          <p class="mt-2 text-slate-500 dark:text-slate-400">
+            {{ studentData?.firstName ? 'Prêt à booster votre carrière aujourd\\'hui ?' : 'Complétez votre profil pour commencer votre recherche.' }}
+          </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
@@ -42,10 +53,9 @@ import { Router, RouterModule, RouterLink } from '@angular/router';
 
       <div class="max-w-7xl mx-auto px-6 py-8">
         <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Que voulez-vous faire ?</h3>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <div class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer" routerLink="/internships">
+          <div class="group bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer" routerLink="/offres">
             <div class="h-12 w-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
@@ -66,8 +76,26 @@ import { Router, RouterModule, RouterLink } from '@angular/router';
     </div>
   `
 })
-export class StudentDashboardComponent {
-  studentName = 'Mohammed';
-  constructor(private router: Router) {}
-  goToProfile() { this.router.navigate(['/student/profile']); }
+export class StudentDashboardComponent implements OnInit {
+  studentData: StudentProfile | null = null;
+
+  constructor(
+    private router: Router,
+    private profileService: ProfileService
+  ) {}
+
+  ngOnInit() {
+    this.loadProfile();
+  }
+
+  loadProfile() {
+    this.profileService.getMyStudentProfile().subscribe({
+      next: (data) => this.studentData = data,
+      error: (err) => console.error('Erreur de chargement profil', err)
+    });
+  }
+
+  goToProfile() {
+    this.router.navigate(['/student/profile']);
+  }
 }

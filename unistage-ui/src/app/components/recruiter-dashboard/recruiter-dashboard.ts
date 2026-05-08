@@ -204,5 +204,14 @@ export class RecruiterDashboardComponent implements OnInit {
 
   closeOfferModal(): void { this.showOfferModal = false; }
   loadNotifications(): void { this.notificationService.getNotifications().subscribe(data => this.notifications = data); }
-  voirCV(studentId: number): void { alert("Visualisation du CV de l'étudiant #" + studentId); }
+// recruiter-dashboard.component.ts
+voirCV(cvUrl: string | undefined | null): void {
+  if (cvUrl) {
+    // Open the actual PDF from your storage endpoint
+    const url = `http://localhost:8082/api/profiles/files/${cvUrl}`;
+    window.open(url, '_blank');
+  } else {
+    alert("Cet étudiant n'a pas encore téléchargé de CV.");
+  }
+}
 }

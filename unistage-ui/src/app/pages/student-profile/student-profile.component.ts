@@ -43,24 +43,32 @@ export class StudentProfileComponent implements OnInit {
   ngOnInit(): void {
     this.fetchProfile();
   }
+fetchProfile() {
+  this.profileService.getMyStudentProfile().subscribe({
+    next: (profile: any) => {
+      if(profile) {
+        // 1. Core Data (Matches your console log)
+        this.fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+        this.phone = profile.phone || '';
+        this.university = profile.university || '';
+        this.skills = profile.skills || '';
 
-  fetchProfile() {
-    // 1. Use profileService (matching the constructor)
-    // 2. Use getMyStudentProfile() (matching your ProfileService)
-    this.profileService.getMyStudentProfile().subscribe({
-      next: (profile: any) => {
-        if(profile) {
-          this.fullName = (profile.firstName || '') + ' ' + (profile.lastName || '');
-          this.email = profile.email || '';
-          this.phone = profile.phone || '';
-          this.university = profile.university || '';
-          this.skills = profile.skills || '';
-          this.experiences = profile.experiences || [];
-        }
-      },
-      error: (err: any) => console.log('Profil non trouvé ou erreur serveur.', err)
-    });
-  }
+        // 2. Experiences
+        // If the DB has experiences, use them; otherwise, keep an empty list.
+        this.experiences = profile.experiences && profile.experiences.length > 0
+          ? profile.experiences
+          : [];
+
+        // 3. Existing Files (for display)
+        // We don't set cvFile (the File object) here because that's for NEW uploads.
+        // But we can store the URLs to show the recruiter what's already there.
+        this.cvFile = profile.cvFile;
+        this.coverLetterFile = profile.coverLetterFile;
+      }
+    },
+    error: (err: any) => console.error('Error fetching profile', err)
+  });
+}
 
   // --- HELPER METHODS ---
   addExperience() {
