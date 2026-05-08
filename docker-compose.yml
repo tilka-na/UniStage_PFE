@@ -68,3 +68,18 @@ services:
       - "8080:8080"
     environment:
       - EUREKA_HOST=host.docker.internal
+  internship-service:
+    build: ./internship-service
+    container_name: internship-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_HOST=host.docker.internal
+      # Add your DB environment variables here if it uses one!
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_HOST=host.docker.internal
