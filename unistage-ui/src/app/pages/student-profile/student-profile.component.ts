@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
-import { StudentProfile } from '../../models/app-models'; // Import your interface
+import { StudentProfile } from '../../models/app-models'; // Ensure this path is correct
 
 interface Experience {
   title: string;
@@ -16,17 +16,23 @@ interface Experience {
   selector: 'app-student-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './student-profile.component.html' // Assuming you keep the HTML template here or in a file
+  templateUrl: './student-profile.component.html'
 })
 export class StudentProfileComponent implements OnInit {
 
-  // --- VARIABLES ---
-  fullName: string = '';
-  email: string = '';
-  phone: string = '';
-  university: string = '';
-  skills: string = '';
-  experiences: Experience[] = [];
+  // --- THE MISSING PROFILE OBJECT ---
+  // This exactly matches what your HTML is looking for
+  profile: any = {
+    firstName: '',
+    lastName: '',
+    cne: '',
+    phone: '',
+    university: '',
+    skills: '',
+    experiences: [],
+    cvUrl: '',
+    coverLetterUrl: ''
+  };
 
   cvFile: File | null = null;
   coverLetterFile: File | null = null;
@@ -36,47 +42,49 @@ export class StudentProfileComponent implements OnInit {
   success: string = '';
 
   constructor(
-    private profileService: ProfileService, // Corrected Service Name
+    private profileService: ProfileService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.fetchProfile();
   }
-fetchProfile() {
-  this.profileService.getMyStudentProfile().subscribe({
-    next: (profile: any) => {
-      if(profile) {
-        // 1. Core Data (Matches your console log)
-        this.fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
-        this.phone = profile.phone || '';
-        this.university = profile.university || '';
-        this.skills = profile.skills || '';
 
-        // 2. Experiences
-        // If the DB has experiences, use them; otherwise, keep an empty list.
-        this.experiences = profile.experiences && profile.experiences.length > 0
-          ? profile.experiences
-          : [];
+  fetchProfile() {
+    this.profileService.getMyStudentProfile().subscribe({
+      next: (apiProfile: any) => {
+        if(apiProfile) {
+          // 1. Core Data
+          this.profile.firstName = apiProfile.firstName || '';
+          this.profile.lastName = apiProfile.lastName || '';
+          this.profile.cne = apiProfile.cne || '';
+          this.profile.phone = apiProfile.phone || '';
+          this.profile.university = apiProfile.university || '';
+          this.profile.skills = apiProfile.skills || '';
+          this.profile.cvUrl = apiProfile.cvUrl || '';
+          this.profile.coverLetterUrl = apiProfile.coverLetterUrl || '';
 
-        // 3. Existing Files (for display)
-        // We don't set cvFile (the File object) here because that's for NEW uploads.
-        // But we can store the URLs to show the recruiter what's already there.
-        this.cvFile = profile.cvFile;
-        this.coverLetterFile = profile.coverLetterFile;
-      }
-    },
-    error: (err: any) => console.error('Error fetching profile', err)
-  });
-}
+          // 2. Experiences
+          this.profile.experiences = apiProfile.experiences && apiProfile.experiences.length > 0
+            ? apiProfile.experiences
+            : [];
+
+          // 3. Existing Files (for display)
+          this.cvFile = apiProfile.cvFile;
+          this.coverLetterFile = apiProfile.coverLetterFile;
+        }
+      },
+      error: (err: any) => console.error('Erreur lors de la récupération du profil', err)
+    });
+  }
 
   // --- HELPER METHODS ---
   addExperience() {
-    this.experiences.push({ title: '', organization: '', period: '', description: '' });
+    this.profile.experiences.push({ title: '', organization: '', period: '', description: '' });
   }
 
   removeExperience(index: number) {
-    this.experiences.splice(index, 1);
+    this.profile.experiences.splice(index, 1);
   }
 
   onCvSelected(event: any) {
@@ -92,25 +100,15 @@ fetchProfile() {
     this.error = '';
     this.success = '';
 
-    if (!this.fullName || !this.phone || !this.university) {
+    if (!this.profile.firstName || !this.profile.phone || !this.profile.university) {
       this.error = 'Veuillez remplir les champs obligatoires.';
       return;
     }
 
     this.isSubmitting = true;
 
-    // Map the local variables back to the StudentProfile structure
-    const profileData: any = {
-      firstName: this.fullName.split(' ')[0],
-      lastName: this.fullName.split(' ').slice(1).join(' ') || '',
-      phone: this.phone,
-      university: this.university,
-      skills: this.skills,
-      experiences: this.experiences
-    };
-
-    // Use updateMyStudentProfile() (matching your ProfileService)
-    this.profileService.updateMyStudentProfile(profileData, this.cvFile || undefined, this.coverLetterFile || undefined)
+    // Send the correctly formatted profile object to your service
+    this.profileService.updateMyStudentProfile(this.profile, this.cvFile || undefined, this.coverLetterFile || undefined)
       .subscribe({
         next: (response: any) => {
           this.isSubmitting = false;
@@ -118,7 +116,7 @@ fetchProfile() {
         },
         error: (err: any) => {
           this.isSubmitting = false;
-          console.error('Update failed', err);
+          console.error('La mise à jour a échoué', err);
           this.error = 'Erreur: ' + (err.error?.message || 'Problème de connexion');
         }
       });
