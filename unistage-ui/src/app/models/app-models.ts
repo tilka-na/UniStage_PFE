@@ -20,6 +20,7 @@ export interface Application {
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   date: Date | string;
   internshipOffer?: InternshipOffer;
+
 }
 
 export interface Milestone {
@@ -44,6 +45,7 @@ export interface Internship {
   status: string;
   studentId: number;
   applicationSource?: Application;
+
   milestones?: Milestone[];
   evaluations?: Evaluation[];
 }
@@ -116,3 +118,4 @@ export interface TutorProfile {
   department?: string;
   companyId?: number;
 }
+

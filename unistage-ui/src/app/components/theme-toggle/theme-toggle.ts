@@ -9,7 +9,6 @@ export class ThemeToggleComponent implements OnInit {
   isDarkMode = false;
 
   ngOnInit() {
-    // Kangalbo wach l'utilisateur deja khtar dark mode 9bl
     const theme = localStorage.getItem('theme');
     
     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {

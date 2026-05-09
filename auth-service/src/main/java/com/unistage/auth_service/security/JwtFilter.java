@@ -7,7 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.beans.factory.annotation.Value;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,7 +20,12 @@ import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private final Key SECRET_KEY =Keys.hmacShaKeyFor("unistage_secret_unistage_secret_123456".getBytes());
+    @Value("${jwt.secret}")
+    private String secretString;
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretString.getBytes());
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -39,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         try {
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();

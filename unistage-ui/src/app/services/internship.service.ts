@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { InternshipOffer, Internship, Evaluation, Application } from '../models/app-models';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +15,7 @@ export class InternshipService {
 
   // ==========================================
   // --- 1. GESTION DES OFFRES (Recruiter/All) ---
+
   // ==========================================
 
   getAllOffers(): Observable<InternshipOffer[]> {
@@ -41,6 +43,7 @@ export class InternshipService {
   // ==========================================
 
   // For Recruiter
+
   getAllApplications(): Observable<Application[]> {
     return this.http.get<Application[]>(`${this.baseUrl}/applications`);
   }
@@ -65,15 +68,18 @@ export class InternshipService {
   // --- 3. INTERNSHIP & EVALUATIONS ---
   // ==========================================
 
+
   getInternshipDetails(id: number): Observable<Internship> {
     return this.http.get<Internship>(`${this.baseUrl}/internships/${id}`);
   }
 
   addEvaluation(internshipId: number, evaluation: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/internships/${internshipId}/evaluations`, evaluation);
+
   }
 
   validateMilestone(milestoneId: number): Observable<any> {
     return this.http.put(`${this.baseUrl}/internships/milestones/${milestoneId}/validate`, {});
   }
 }
+

@@ -26,10 +26,12 @@ export class ProfileService {
   getMyStudentProfile(): Observable<StudentProfile> {
     return this.http.get<StudentProfile>(`${this.baseUrl}/students/me`);
   }
-
   updateMyStudentProfile(profileData: StudentProfile, cvFile?: File, coverLetterFile?: File): Observable<StudentProfile> {
     const formData = new FormData();
-    formData.append('profile', JSON.stringify(profileData));
+    formData.append('profile', new Blob([JSON.stringify(profileData)], {
+      type: 'application/json'
+    }));
+
     if (cvFile) formData.append('cv', cvFile);
     if (coverLetterFile) formData.append('coverLetter', coverLetterFile);
 

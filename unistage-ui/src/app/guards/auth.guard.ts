@@ -23,6 +23,7 @@ export class AuthGuard implements CanActivate {
         this.router.navigate(['/login']);
         return false;
       }
+
       const userRole = payload.role; // assuming JWT has role
 
       // Check route data

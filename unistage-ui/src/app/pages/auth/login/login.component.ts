@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../services/auth.service'; // Adjust path as needed
+import { AuthService } from '../../../services/auth.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -72,30 +72,42 @@ export class LoginComponent {
   errorMessage = '';
   isLoading = false;
 
-  //  Inject HttpClient in the constructor
-constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-onLogin() {
-  this.isLoading = true;
-  const credentials = { email: this.email, password: this.password };
-
-  this.authService.login(credentials).subscribe({
-    next: () => {
-      this.isLoading = false;
-      // Now that we have the token, we can go to the dashboard
-      this.router.navigate(['/student/dashboard']);
-    },
-    error: (err: any) => {
-      this.isLoading = false;
-      this.errorMessage = "Email ou mot de passe incorrect.";
+  onLogin() {
+    if (!this.email || !this.password) {
+      this.errorMessage = "Veuillez remplir tous les champs.";
+      return;
     }
-  });
-}
 
-  // ... rest of your code
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const credentials = { email: this.email, password: this.password };
+
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        const role = this.authService.getRole();
+
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin/users']);
+        } else if (role === 'ENCADRANT') {
+          this.router.navigate(['/encadrant/dashboard']);
+        } else if (role === 'RECRUITER') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/student/dashboard']);
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.errorMessage = "Email ou mot de passe incorrect.";
+      }
+    });
+  }
+
   loginWithGoogle() {
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
 }
-
-

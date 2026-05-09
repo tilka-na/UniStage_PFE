@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -35,17 +36,20 @@ import { AuthService } from '../../../services/auth.service';
             <div>
               <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nom</label>
               <input type="text" [(ngModel)]="registerData.lastName" name="lastName" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email</label>
             <input type="email" [(ngModel)]="registerData.email" name="email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Mot de passe</label>
             <input type="password" [(ngModel)]="registerData.password" name="password" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
+           
           </div>
 
           <div>
@@ -58,6 +62,7 @@ import { AuthService } from '../../../services/auth.service';
               </button>
               <button type="button" (click)="setRole('RECRUITER')"
                       [class]="registerData.role === 'RECRUITER' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+
                       class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
                 Recruteur
               </button>
@@ -122,9 +127,11 @@ export class RegisterComponent {
         alert('Échec de l\'inscription. Vérifiez vos informations.');
       }
     });
+
   }
 
   signupWithGoogle() {
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
+
 }

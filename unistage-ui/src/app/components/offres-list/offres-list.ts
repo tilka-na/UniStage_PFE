@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+
+import { FormsModule } from '@angular/forms'; 
 import { InternshipService } from '../../services/internship.service';
 import { InternshipOffer } from '../../models/app-models';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
@@ -17,7 +18,8 @@ export class OffresListComponent implements OnInit {
   allOffers: InternshipOffer[] = [];
   filteredOffers: InternshipOffer[] = [];
   isLoading: boolean = true;
-  currentRole: string = 'admin';
+
+  currentRole: string = 'admin'; 
 
   // Variables de recherche
   searchTitle: string = '';
@@ -33,7 +35,8 @@ export class OffresListComponent implements OnInit {
 
   constructor(
     private service: InternshipService,
-    private cdr: ChangeDetectorRef
+
+    private cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
@@ -45,9 +48,10 @@ export class OffresListComponent implements OnInit {
     this.service.getAllOffers().subscribe({
       next: (data) => {
         this.allOffers = data;
-        this.filteredOffers = data;
+
+        this.filteredOffers = data; 
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error("Erreur chargement:", err);
@@ -66,7 +70,8 @@ export class OffresListComponent implements OnInit {
       const title = (offer.title || '').toLowerCase();
       const location = (offer.location || '').toLowerCase();
       const domain = (offer.domain || '').toLowerCase();
-      const company = (offer.companyName || '').toLowerCase();
+
+      const company = (offer.companyName || '').toLowerCase(); 
 
       return title.includes(titleTerm) &&
              location.includes(cityTerm) &&
@@ -97,7 +102,8 @@ export class OffresListComponent implements OnInit {
   openApplyModal(offer: InternshipOffer) {
     this.selectedOffer = offer;
     this.showModal = true;
-    this.motivationText = '';
+
+    this.motivationText = ''; 
   }
 
   closeModal() {
@@ -127,7 +133,8 @@ export class OffresListComponent implements OnInit {
     this.service.postuler(offerId, candidature).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.closeModal();
+
+        this.closeModal(); 
         alert("Candidature envoyée avec succès! ✨");
       },
       error: (err) => {
@@ -137,4 +144,5 @@ export class OffresListComponent implements OnInit {
       }
     });
   }
+
 }

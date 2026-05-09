@@ -71,6 +71,7 @@ export class ForgotPasswordComponent {
         this.submitted = true;
       },
       error: (error:any) => {
+
         console.error('Erreur lors de l\'envoi:', error);
         this.isLoading = false;
         this.submitted = true;
