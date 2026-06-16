@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { InternshipService } from '../../services/internship.service'; // 💡 1. Import your internship service
 import { StudentProfile } from '../../models/app-models';
 
 @Component({
@@ -34,7 +35,7 @@ import { StudentProfile } from '../../models/app-models';
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Candidatures</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ candidaturesCount }}</p>
               </div>
             </div>
 
@@ -44,7 +45,9 @@ import { StudentProfile } from '../../models/app-models';
               </div>
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Vues Profil</p>
-                <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                  {{ studentData?.['profileViews'] || 0 }}
+                </p>
               </div>
             </div>
           </div>
@@ -78,10 +81,12 @@ import { StudentProfile } from '../../models/app-models';
 })
 export class StudentDashboardComponent implements OnInit {
   studentData: StudentProfile | null = null;
+  candidaturesCount: number = 0; // 💡 2. Keep track of count state
 
   constructor(
     private router: Router,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private internshipService: InternshipService // 💡 3. Inject service
   ) {}
 
   ngOnInit() {
@@ -90,12 +95,38 @@ export class StudentDashboardComponent implements OnInit {
 
   loadProfile() {
     this.profileService.getMyStudentProfile().subscribe({
-      next: (data) => this.studentData = data,
+      next: (data) => {
+        this.studentData = data;
+        // Load applications count right after the profile loaded successfully
+        this.loadCandidaturesData();
+      },
       error: (err) => console.error('Erreur de chargement profil', err)
     });
   }
 
+  loadCandidaturesData() {
+    this.internshipService.getAllApplications().subscribe({
+      next: (apps) => {
+        if (apps && this.studentData) {
+          // Filter for this student AND verify the recruiter has accepted it
+          const myAcceptedApps = apps.filter((app: any) => {
+            const appStudentId = app.studentId || app.student?.id || app.userId;
+            const isMyApplication = appStudentId === this.studentData?.userId || appStudentId === this.studentData?.id;
+
+            // 💡 Check the status string coming from your backend
+            const isAccepted = app.status === 'ACCEPTED' || app.status === 'ACCEPTEE';
+
+            return isMyApplication && isAccepted;
+          });
+
+          this.candidaturesCount = myAcceptedApps.length;
+        }
+      },
+      error: (err) => console.error('Erreur de chargement', err)
+    });
+  }
+
   goToProfile() {
-    this.router.navigate(['/student/profile']);
+    this.router.navigate(['/profile']);
   }
 }

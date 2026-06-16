@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
+
     <div class="relative min-h-screen bg-white dark:bg-slate-950 overflow-hidden transition-colors duration-300 font-sans">
 
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-orange-100/50 to-transparent dark:from-orange-900/10 pointer-events-none z-0"></div>
@@ -14,7 +15,6 @@ import { RouterLink } from '@angular/router';
 
       <section class="relative z-10 pt-32 pb-20 lg:pt-40 lg:pb-32">
         <div class="max-w-7xl mx-auto px-6 text-center">
-
           <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
             Trouvez le stage <br class="hidden md:block" />
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-400 dark:to-yellow-400">

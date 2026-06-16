@@ -1,5 +1,6 @@
 package com.unistage.internship_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class Milestone {
 
     @ManyToOne
     @JoinColumn(name = "internship_id")
+    @JsonIgnore
     private Internship internship;
 
     // Zidi had l-méthode bach t-khdem validate() f l-service

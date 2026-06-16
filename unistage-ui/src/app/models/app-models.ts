@@ -106,6 +106,7 @@ export interface StudentProfile {
   level?: string;
   cvUrl?: string;
   coverLetterUrl?: string;
+  profileViews?: number;
   experiences?: StudentExperience[];
 }
 

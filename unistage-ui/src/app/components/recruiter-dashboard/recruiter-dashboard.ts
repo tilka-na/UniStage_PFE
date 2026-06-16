@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { ProfileService } from '../../services/profile.service';
 import { InternshipService } from '../../services/internship.service';
 import { NotificationService } from '../../services/notification.service';
 import { Application, InternshipOffer, Notification } from '../../models/app-models';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-recruiter-dashboard',
   standalone: true,
@@ -39,7 +40,8 @@ export class RecruiterDashboardComponent implements OnInit {
   constructor(
     private internshipService: InternshipService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router // <--- Add this service right here!
   ) {}
 
   ngOnInit(): void {
@@ -64,7 +66,17 @@ export class RecruiterDashboardComponent implements OnInit {
       next: (data) => {
         this.myOffers = data;
         this.domaines = [...new Set(data.map(o => o.domain).filter(d => !!d))];
-        if (this.selectedDomain) this.ouvrirDomaine(this.selectedDomain);
+
+        // --- ADD THIS FIX HERE ---
+        if (this.selectedDomain) {
+          this.ouvrirDomaine(this.selectedDomain);
+        } else {
+          // If no specific domain is selected yet, make sure filteredOffers
+          // isn't left empty so your main dashboard loop can see your work!
+          this.filteredOffers = data;
+        }
+        // -------------------------
+
         this.isLoadingOffers = false;
         this.cdr.detectChanges();
       },
@@ -201,17 +213,23 @@ export class RecruiterDashboardComponent implements OnInit {
     this.newOffer = this.initNewOffer();
     this.showOfferModal = true;
   }
-
-  closeOfferModal(): void { this.showOfferModal = false; }
-  loadNotifications(): void { this.notificationService.getNotifications().subscribe(data => this.notifications = data); }
-// recruiter-dashboard.component.ts
-voirCV(cvUrl: string | undefined | null): void {
-  if (cvUrl) {
-    // Open the actual PDF from your storage endpoint
-    const url = `http://localhost:8082/api/profiles/files/${cvUrl}`;
-    window.open(url, '_blank');
-  } else {
-    alert("Cet étudiant n'a pas encore téléchargé de CV.");
+  closeOfferModal(): void {
+    this.showOfferModal = false;
   }
-}
-}
+
+  loadNotifications(): void {
+    this.notificationService.getNotifications().subscribe(data => this.notifications = data);
+  }
+
+  // 👑 Your beautifully written guard method:
+  voirProfil(studentId: number | undefined): void {
+    if (!studentId) {
+      alert("Impossible de trouver l'identifiant de cet étudiant.");
+      return;
+    }
+
+    // Navigates securely with the query parameter
+    this.router.navigate(['/profile'], { queryParams: { id: studentId } });
+  }
+
+} // 👈 This is the absolute final closing bracket of your class. Nothing should be below this!

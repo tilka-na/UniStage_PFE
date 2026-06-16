@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { InternshipService } from '../../services/internship.service';
 import { InternshipOffer } from '../../models/app-models';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
@@ -19,7 +19,7 @@ export class OffresListComponent implements OnInit {
   filteredOffers: InternshipOffer[] = [];
   isLoading: boolean = true;
 
-  currentRole: string = 'admin'; 
+  currentRole: string = 'admin';
 
   // Variables de recherche
   searchTitle: string = '';
@@ -36,7 +36,7 @@ export class OffresListComponent implements OnInit {
   constructor(
     private service: InternshipService,
 
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -49,9 +49,9 @@ export class OffresListComponent implements OnInit {
       next: (data) => {
         this.allOffers = data;
 
-        this.filteredOffers = data; 
+        this.filteredOffers = data;
         this.isLoading = false;
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error("Erreur chargement:", err);
@@ -71,7 +71,7 @@ export class OffresListComponent implements OnInit {
       const location = (offer.location || '').toLowerCase();
       const domain = (offer.domain || '').toLowerCase();
 
-      const company = (offer.companyName || '').toLowerCase(); 
+      const company = (offer.companyName || '').toLowerCase();
 
       return title.includes(titleTerm) &&
              location.includes(cityTerm) &&
@@ -103,7 +103,7 @@ export class OffresListComponent implements OnInit {
     this.selectedOffer = offer;
     this.showModal = true;
 
-    this.motivationText = ''; 
+    this.motivationText = '';
   }
 
   closeModal() {
@@ -112,7 +112,7 @@ export class OffresListComponent implements OnInit {
   }
 
   // --- SUBMIT MODIFIÉ ---
-  submitApplication() {
+submitApplication() {
     if (!this.motivationText.trim()) {
       alert("Kteb chi 7aja f motivation!");
       return;
@@ -120,27 +120,30 @@ export class OffresListComponent implements OnInit {
     if (!this.selectedOffer?.id) return;
 
     this.isSubmitting = true;
-
-    // Red-di l-bal: l-backend kiy-tsenna offerId f l-URL
     const offerId = this.selectedOffer.id;
     const candidature = {
-      studentId: 1, // À remplacer par l'ID de l'étudiant connecté plus tard
+      studentId: 1, // Will be linked to session ID later
       motivation: this.motivationText,
       status: 'PENDING'
     };
 
-    // Appeler le service avec offerId séparé
     this.service.postuler(offerId, candidature).subscribe({
-      next: () => {
+      next: (res) => {
         this.isSubmitting = false;
-
-        this.closeModal(); 
+        this.closeModal();
         alert("Candidature envoyée avec succès! ✨");
       },
       error: (err) => {
-        console.error("Erreur envoi:", err);
-        alert("Erreur technique. Vérifie si tu n'as pas déjà postulé.");
-        this.isSubmitting = false;
+        // If the backend returns a raw text string, HttpClient treats it as a parsing error
+        if (err.status === 200 || err.error?.text) {
+          this.isSubmitting = false;
+          this.closeModal();
+          alert("Candidature envoyée avec succès! ✨");
+        } else {
+          console.error("Erreur envoi:", err);
+          alert("Erreur technique. Vérifie si tu n'as pas déjà postulé.");
+          this.isSubmitting = false;
+        }
       }
     });
   }

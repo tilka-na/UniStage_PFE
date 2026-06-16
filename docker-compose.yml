@@ -11,8 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d # Creates auth_db, internship_db, profile_db
-
+      - ./init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
   mongodb:
     image: mongo:6
     container_name: unistage-mongo
@@ -95,6 +94,9 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/internship_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       KAFKA_HOST: kafka
       EUREKA_HOST: eureka-server
     ports:
@@ -111,6 +113,7 @@ services:
         condition: service_healthy
     environment:
       EUREKA_HOST: eureka-server
+      MONGO_HOST: mongodb  # <--- Add this line
     ports:
       - "8084:8084"
 
@@ -144,9 +147,16 @@ services:
 
   frontend:
     container_name: unistage-frontend
-    build: ./unistage-ui
+    build:
+      context: ./unistage-ui
+      dockerfile: Dockerfile.dev
     ports:
-      - "4200:80"
+      - "4200:4200"
+    volumes:
+      - ./unistage-ui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     depends_on:
       - api-gateway
 

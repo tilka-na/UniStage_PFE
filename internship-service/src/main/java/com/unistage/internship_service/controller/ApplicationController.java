@@ -7,7 +7,6 @@ import com.unistage.internship_service.entity.Application;
 import com.unistage.internship_service.service.InternshipService;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/applications")
 public class ApplicationController {
@@ -15,9 +14,9 @@ public class ApplicationController {
 
     public ApplicationController(InternshipService service) { this.service = service; }
 
-    @PostMapping("/postuler/{offerId}") 
+    @PostMapping("/postuler/{offerId}")
     public ResponseEntity<Application> postuler(@PathVariable Long offerId, @RequestBody Application application) {
-    Application savedApp = service.postuler(offerId, application); 
+    Application savedApp = service.postuler(offerId, application);
     return ResponseEntity.ok(savedApp);
 }
 

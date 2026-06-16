@@ -36,25 +36,22 @@ import { AuthService } from '../../../services/auth.service';
             <div>
               <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nom</label>
               <input type="text" [(ngModel)]="registerData.lastName" name="lastName" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
-
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Email</label>
             <input type="email" [(ngModel)]="registerData.email" name="email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
-
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Mot de passe</label>
             <input type="password" [(ngModel)]="registerData.password" name="password" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-orange-500 outline-none dark:text-white">
-           
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Je suis un(e)...</label>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-3 gap-2">
               <button type="button" (click)="setRole('STUDENT')"
                       [class]="registerData.role === 'STUDENT' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
                       class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
@@ -62,9 +59,13 @@ import { AuthService } from '../../../services/auth.service';
               </button>
               <button type="button" (click)="setRole('RECRUITER')"
                       [class]="registerData.role === 'RECRUITER' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
-
                       class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
                 Recruteur
+              </button>
+              <button type="button" (click)="setRole('ENCADRANT')"
+                      [class]="registerData.role === 'ENCADRANT' ? 'bg-orange-50 border-orange-500 text-orange-700 ring-1 ring-orange-500' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+                      class="py-2.5 rounded-lg border text-sm font-semibold transition-all">
+                Encadrant
               </button>
             </div>
           </div>
@@ -90,7 +91,6 @@ import { AuthService } from '../../../services/auth.service';
 export class RegisterComponent {
   isLoading = false;
 
-  // This object perfectly matches your Spring Boot backend's expected JSON
   registerData = {
     firstName: '',
     lastName: '',
@@ -101,22 +101,21 @@ export class RegisterComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  // Update role when they click the buttons
-  setRole(selectedRole: 'STUDENT' | 'RECRUITER') {
+  setRole(selectedRole: 'STUDENT' | 'RECRUITER' | 'ENCADRANT') {
     this.registerData.role = selectedRole;
   }
 
   onRegister() {
     this.isLoading = true;
 
-    // Make the REAL API call to your database
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // At this point, they are successfully in the DB and logged in.
-        // Now the AuthGuard will allow them into the dashboard!
+
         if (this.registerData.role === 'STUDENT') {
           this.router.navigate(['/student/profile']);
+        } else if (this.registerData.role === 'ENCADRANT') {
+          this.router.navigate(['/encadrant/dashboard']);
         } else {
           this.router.navigate(['/dashboard']);
         }
@@ -127,11 +126,9 @@ export class RegisterComponent {
         alert('Échec de l\'inscription. Vérifiez vos informations.');
       }
     });
-
   }
 
   signupWithGoogle() {
     window.location.href = 'http://localhost:8081/oauth2/authorization/google';
   }
-
 }

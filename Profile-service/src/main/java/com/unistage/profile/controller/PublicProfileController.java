@@ -27,7 +27,12 @@ public class PublicProfileController {
     @GetMapping("/students/{userId}")
     public ResponseEntity<StudentProfile> getStudentPublic(@PathVariable Long userId) {
         return studentRepo.findByUserId(userId)
-                .map(ResponseEntity::ok)
+                .map(profile -> {
+                    // 💡 Increment the view counter every time a recruiter calls this API
+                    profile.setProfileViews(profile.getProfileViews() + 1);
+                    studentRepo.save(profile);
+                    return ResponseEntity.ok(profile);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

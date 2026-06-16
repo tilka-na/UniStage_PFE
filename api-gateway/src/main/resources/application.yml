@@ -6,31 +6,47 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      server:
-        webflux:
-          cors:
-            cors-configurations:
-              '[/**]':
-                allowedOrigins: "http://localhost:4200"
-                allowedMethods:
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - OPTIONS
-                allowedHeaders: "*"
-                allowCredentials: true
-          routes:
-            - id: auth-service
-              uri: lb://AUTH-SERVICE
-              predicates:
-                - Path=/api/auth/**
-            - id: user-service
-              uri: lb://USER-SERVICE
-              predicates:
-                - Path=/api/users/**
+      # 🛠️ FIX 1: Use globalcors so Spring Cloud Gateway activates its gatekeeper rules
+      globalcors:
+        add-to-status-code: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      # 🛠️ FIX 2: Separate into distinct lines to guarantee clean parsing across versions
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST
+        - DedupeResponseHeader=Access-Control-Allow-Credentials, RETAIN_FIRST
+
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+
+        - id: internship-service
+          uri: lb://INTERNSHIP-SERVICE
+          predicates:
+            - Path=/api/internships/**, /api/applications/**
+
+        - id: document-service
+          uri: lb://DOCUMENT-SERVICE
+          predicates:
+            - Path=/api/documents/**
 
 eureka:
   client:
     service-url:
-      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/

@@ -26,6 +26,9 @@ export class ProfileService {
   getMyStudentProfile(): Observable<StudentProfile> {
     return this.http.get<StudentProfile>(`${this.baseUrl}/students/me`);
   }
+  getStudentProfileById(id: number): Observable<any> {
+    return this.http.get(`http://localhost:8082/api/public/students/${id}`, { withCredentials: true });
+  }
   updateMyStudentProfile(profileData: StudentProfile, cvFile?: File, coverLetterFile?: File): Observable<StudentProfile> {
     const formData = new FormData();
     formData.append('profile', new Blob([JSON.stringify(profileData)], {

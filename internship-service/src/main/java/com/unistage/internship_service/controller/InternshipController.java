@@ -9,76 +9,63 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/internships")
 public class InternshipController {
 
-    private final InternshipService service;
+  private final InternshipService service;
 
-    public InternshipController(InternshipService service) {
-        this.service = service;
-    }
-    
-    // 1. Jib ga3 l-offres
-    @GetMapping("/offers")
-    public List<InternshipOffer> getAllOffers() {
-        return service.getAllOffers();
-    }
+  public InternshipController(InternshipService service) {
+    this.service = service;
+  }
 
-    // 2. Cree offer jdida
-    @PostMapping("/offers")
-    public InternshipOffer createOffer(@RequestBody InternshipOffer offer) {
-        return service.createOffer(offer);
-    }
+  @GetMapping("/offers")
+  public List<InternshipOffer> getAllOffers() {
+    return service.getAllOffers();
+  }
 
-    // 3. Jib offer b l-ID
-    @GetMapping("/offers/{id}")
-    public ResponseEntity<InternshipOffer> getOfferById(@PathVariable Long id) {
-        return service.getOfferById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+  @PostMapping("/offers")
+  public InternshipOffer createOffer(@RequestBody InternshipOffer offer) {
+    return service.createOffer(offer);
+  }
 
-    // 4. M-s-7 offer
-    @DeleteMapping("/offers/{id}")
-    public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
-        service.deleteOffer(id);
-        return ResponseEntity.ok().build();
-    }
+  @GetMapping("/offers/{id}")
+  public ResponseEntity<InternshipOffer> getOfferById(@PathVariable Long id) {
+    return service.getOfferById(id)
+      .map(ResponseEntity::ok)
+      .orElse(ResponseEntity.notFound().build());
+  }
 
-    // 5. Modifier offer
-    @PutMapping("/offers/{id}")
-    public ResponseEntity<InternshipOffer> updateOffer(@PathVariable Long id, @RequestBody InternshipOffer offer) {
-        InternshipOffer updatedOffer = service.updateOffer(id, offer);
-        return ResponseEntity.ok(updatedOffer);
-    }
-    // 1. Jib details dyal stage (Milestones + Evaluations)
-    @GetMapping("/{id}")
-    public ResponseEntity<Internship> getDetails(@PathVariable Long id) {
-        return service.getInternshipDetails(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+  @DeleteMapping("/offers/{id}")
+  public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
+    service.deleteOffer(id);
+    return ResponseEntity.ok().build();
+  }
 
-    // 2. Valider milestone
-    @PutMapping("/milestones/{id}/validate")
-    public ResponseEntity<Void> validateMilestone(@PathVariable Long id) {
-        service.validateMilestone(id);
-        return ResponseEntity.ok().build();
-    }
+  @PutMapping("/offers/{id}")
+  public ResponseEntity<InternshipOffer> updateOffer(@PathVariable Long id, @RequestBody InternshipOffer offer) {
+    InternshipOffer updatedOffer = service.updateOffer(id, offer);
+    return ResponseEntity.ok(updatedOffer);
+  }
 
-    // 3. Ajouter une évaluation
-    @PostMapping("/{id}/evaluations")
-    public ResponseEntity<Evaluation> addEvaluation(@PathVariable Long id, @RequestBody Evaluation evaluation) {
-        return ResponseEntity.ok(service.addEvaluation(id, evaluation));
-    }
-    // Zidi hada f InternshipController dyal port 8084
-@GetMapping("/{id}")
-public ResponseEntity<Internship> getInternshipDetails(@PathVariable Long id) {
-    return service.getInternshipDetails(id) // L-methode li 3ndek f l-service
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-}
+  // Keep this one
+  @GetMapping("/{id}")
+  public ResponseEntity<Internship> getInternshipDetails(@PathVariable Long id) {
+    return service.getInternshipDetails(id)
+      .map(ResponseEntity::ok)
+      .orElse(ResponseEntity.notFound().build());
+  }
 
+  @PutMapping("/milestones/{id}/validate")
+  public ResponseEntity<Void> validateMilestone(@PathVariable Long id) {
+    service.validateMilestone(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/{id}/evaluations")
+  public ResponseEntity<Evaluation> addEvaluation(@PathVariable Long id, @RequestBody Evaluation evaluation) {
+    return ResponseEntity.ok(service.addEvaluation(id, evaluation));
+  }
+
+  // REMOVED THE DUPLICATE BLOCK THAT WAS HERE
 }

@@ -1,5 +1,6 @@
 package com.unistage.internship_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,7 @@ public class Evaluation {
 
     @ManyToOne
     @JoinColumn(name = "internship_id")
+    @JsonIgnore
     private Internship internship; // <-- HAD L-ISM KHASS Y-KOUN NICHAN "internship"
 
     public Long getId() {

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core'; // Added HostListener
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -56,6 +56,7 @@ import { AuthService } from '../../services/auth.service';
             </div>
 
             <div class="space-y-1">
+              <!-- Student Options -->
               <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'STUDENT'">
                 <a routerLink="/student/dashboard" (click)="closeMenus()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -67,10 +68,19 @@ import { AuthService } from '../../services/auth.service';
                 </a>
               </ng-container>
 
+              <!-- Recruiter Options -->
               <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'RECRUITER'">
                 <a routerLink="/dashboard" (click)="closeMenus()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                   Gestion Recrutement
+                </a>
+              </ng-container>
+
+              <!-- Academic Supervisor (Encadrant) Options -->
+              <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'ENCADRANT'">
+                <a routerLink="/encadrant/dashboard" (click)="closeMenus()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                  Suivi des Stages
                 </a>
               </ng-container>
 
@@ -93,6 +103,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </div>
 
+    <!-- Mobile Drawer Container Menu -->
     <div *ngIf="mobileMenuOpen" class="md:hidden bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-slate-800 shadow-xl p-6 space-y-4">
         <a routerLink="/offres" (click)="closeMenus()" class="block text-lg font-medium text-slate-900 dark:text-white">Offres de stages</a>
         <hr class="border-slate-100 dark:border-slate-800">
@@ -103,8 +114,26 @@ import { AuthService } from '../../services/auth.service';
         </ng-container>
 
         <ng-container *ngIf="authService.isLoggedIn()">
-           <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Connecté en tant que {{ authService.getRole() }}</p>
-           <button (click)="logout()" class="block w-full text-left text-lg font-bold text-red-500">Déconnexion</button>
+           <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Connecté en tant que {{ authService.getRole() }}</p>
+
+           <div class="space-y-2 pl-1 pb-2">
+             <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'STUDENT'">
+               <a routerLink="/student/dashboard" (click)="closeMenus()" class="block text-base font-medium text-slate-700 dark:text-slate-300">Mon Tableau de bord</a>
+               <a routerLink="/student/profile" (click)="closeMenus()" class="block text-base font-medium text-slate-700 dark:text-slate-300">Mon Profil</a>
+             </ng-container>
+
+             <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'RECRUITER'">
+               <a routerLink="/dashboard" (click)="closeMenus()" class="block text-base font-medium text-slate-700 dark:text-slate-300">Gestion Recrutement</a>
+             </ng-container>
+
+             <!-- ✅ Fixed typo here: *ng随if changed to *ngIf -->
+             <ng-container *ngIf="authService.getRole()?.toUpperCase() === 'ENCADRANT'">
+               <a routerLink="/encadrant/dashboard" (click)="closeMenus()" class="block text-base font-medium text-slate-700 dark:text-slate-300">Suivi des Stages</a>
+             </ng-container>
+           </div>
+
+           <hr class="border-slate-100 dark:border-slate-800">
+           <button (click)="logout()" class="block w-full text-left text-lg font-bold text-red-500 mt-2">Déconnexion</button>
         </ng-container>
     </div>
   </nav>
@@ -151,7 +180,6 @@ export class NavbarComponent {
     }
   }
 
-  // Listener to close dropdown when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;

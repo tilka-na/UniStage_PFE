@@ -1,0 +1,22 @@
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-2xl font-black mb-6">Mes Étudiants Encadrés</h1>
+
+  <div class="space-y-4">
+    @for (item of myStudents; track item.id) {
+    <div class="p-4 bg-white dark:bg-darkCard border rounded-xl flex justify-between items-center shadow-sm">
+      <div>
+        <p class="font-bold text-lg">Dossier #{{ item.id }}</p>
+        <p class="text-sm text-gray-400">ID Étudiant: {{ item.studentId }}</p>
+      </div>
+
+      <!-- This routerLink passes the exact ID to the URL path -->
+      <a [routerLink]="['/encadrant/tracking', item.id]"
+         class="bg-gold text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">
+        Voir le dossier
+      </a>
+    </div>
+    } @empty {
+    <p class="text-gray-500">Aucun dossier de stage ne vous est assigné.</p>
+    }
+  </div>
+</div>

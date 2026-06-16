@@ -9,7 +9,7 @@ import { InternshipOffer, Internship, Evaluation, Application } from '../models/
   providedIn: 'root'
 })
 export class InternshipService {
-  private baseUrl = 'http://localhost:8083/api';
+  private baseUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -55,10 +55,12 @@ export class InternshipService {
   }
 
   // Links Student ID when applying
-  postuler(offerId: number, application: any): Observable<Application> {
-    const applicationWithId = { ...application, studentId: this.authService.getUserId() };
-    return this.http.post<Application>(`${this.baseUrl}/applications/postuler/${offerId}`, applicationWithId);
-  }
+postuler(offerId: number, application: any): Observable<any> {
+  // Add responseType text so Angular handles the raw backend message without crashing
+  return this.http.post(`${this.baseUrl}/applications/postuler/${offerId}`, application, {
+    responseType: 'text'
+  });
+}
 
   updateCandidatureStatus(id: number, status: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/applications/${id}/status?newStatus=${status}`, {});
@@ -81,5 +83,10 @@ export class InternshipService {
   validateMilestone(milestoneId: number): Observable<any> {
     return this.http.put(`${this.baseUrl}/internships/milestones/${milestoneId}/validate`, {});
   }
+// Add this inside your InternshipService class in internship.service.ts
+getProfessorInternships(): Observable<Internship[]> {
+  const professorId = this.authService.getUserId(); // Grabs the logged-in supervisor's ID
+  return this.http.get<Internship[]>(`${this.baseUrl}/internships/professor/${professorId}`);
+}
 }
 

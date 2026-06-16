@@ -18,8 +18,9 @@ export class InternshipDetailsComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   isSubmittingEval = false;
-  
-  userRole: 'STUDENT' | 'RECRUITER' = 'RECRUITER'; 
+
+  // 💡 Update 1: Extend type to support ENCADRANT
+  userRole: 'STUDENT' | 'RECRUITER' | 'ENCADRANT' = 'ENCADRANT';
 
   newEvaluation: Evaluation = { grade: 0, comments: '', type: 'MID-TERM' };
 
@@ -29,38 +30,51 @@ export class InternshipDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // 💡 Update 2: Automatically extract the role from the route's custom data profile
+    this.route.data.subscribe(data => {
+      if (data['role']) {
+        this.userRole = data['role'];
+      }
+    });
+
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
-      if (id) this.loadData(id);
+
+      if (id) {
+        this.loadData(id);
+      } else {
+        this.errorMessage = "Aucun identifiant de dossier n'a été fourni.";
+        this.isLoading = false;
+      }
     });
   }
 
   loadData(id: number): void {
-  this.isLoading = true;
-  this.internshipService.getInternshipDetails(id).subscribe({
-    next: (data) => {
-      console.log("Data jaya mn l-Backend:", data); 
-      this.internship = data;
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error("Erreur API:", err); 
-      this.errorMessage = "Impossible de contacter le serveur.";
-      this.isLoading = false;
-    }
-  });
-}
+    this.isLoading = true;
+    this.internshipService.getInternshipDetails(id).subscribe({
+      next: (data) => {
+        console.log("Data jaya mn l-Backend:", data);
+        this.internship = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error("Erreur API:", err);
+        this.errorMessage = "Impossible de contacter le serveur.";
+        this.isLoading = false;
+      }
+    });
+  }
 
   onValidateMilestone(milestone: Milestone): void {
     if (!milestone.id) return;
-    
+
     const oldStatus = milestone.status;
     milestone.status = 'COMPLETED';
 
     this.internshipService.validateMilestone(milestone.id).subscribe({
       next: () => console.log('Milestone validé'),
       error: () => {
-        milestone.status = oldStatus; // Revert ila tra mouchkil
+        milestone.status = oldStatus;
         alert("Erreur lors de la validation.");
       }
     });
@@ -68,7 +82,7 @@ export class InternshipDetailsComponent implements OnInit {
 
   onSubmitEvaluation(): void {
     if (!this.internship?.id) return;
-    
+
     this.isSubmittingEval = true;
     this.internshipService.addEvaluation(this.internship.id, this.newEvaluation).subscribe({
       next: (res) => {
